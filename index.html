@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,7 +13,7 @@
 @media(prefers-color-scheme:dark){:root{--bg:#0e1726;--card:#16233a;--ink:#eef1f6;--mut:#9aa7bd;--btn:#f5b800;--bi:#14213d;--line:#263757}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:84px}
-header{background:var(--btn);color:var(--bi);padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header{flex-wrap:wrap;background:var(--btn);color:var(--bi);padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
 header b{font-size:19px}
 header button{background:transparent;color:var(--bi);border:1.5px solid var(--bi);border-radius:20px;padding:5px 14px;font-weight:700}
 main{max-width:620px;margin:0 auto;padding:14px}
@@ -40,23 +39,25 @@ nav span{display:block;font-size:18px}
 #t{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:14px;display:none;z-index:9;max-width:90%}
 .fmh{font-size:13px;color:var(--ok);font-weight:700;margin-top:2px}
 details summary{cursor:pointer;font-weight:700}
+#dm{display:none;flex-basis:100%;gap:8px;align-items:center;justify-content:space-between;background:#f5b800;color:#14213d;margin:10px -16px -12px;padding:8px 16px;font-size:13px;font-weight:700}
+#dm button{background:#14213d;color:#fff;border:0;border-radius:14px;padding:5px 10px;font-weight:700}
 #md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;align-items:flex-end;justify-content:center}
 .mb{background:var(--card);width:100%;max-width:620px;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
 textarea{width:100%;height:70px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:12px}
 </style>
 </head>
 <body>
-<header><b id="ttl">ESPOIR Finance</b><span><button onclick="lock()">🔒</button> <button id="cur" onclick="swap()">FC</button></span></header>
+<header><b id="ttl">ESPOIR Finance</b><span><button onclick="lock()">🔒</button> <button id="cur" onclick="swap()">FC</button></span><div id="dm"></div></header>
 <main id="app"></main>
 <div id="t"></div>
 <div id="md"></div>
 <nav id="nav"></nav>
 <script>
-var DP=null,CU=null,LK={n:0,t:0},idle,MD=null,S,tab='home',cart=[],D=864e5,KEY='espoir_v03';
+var DEMO=false,REAL=null,REALCU=null,DP=null,CU=null,LK={n:0,t:0},idle,MD=null,S,tab='home',cart=[],D=864e5,KEY='espoir_v03';
 function init(){return{taux:2265,dev:'FC',acc:[{id:'a1',nom:'Caisse',cur:'FC'},{id:'a2',nom:'Caisse',cur:'USD'},{id:'a3',nom:'Mobile Money',cur:'FC'}],p:[],v:[],mv:[],biz:null,fr:[],ac:[],sm:[],us:[],au:[],cl:[],od:[],cs:[]}}
 function norm(){S.cs=S.cs||[];S.od=S.od||[];S.us=S.us||[];S.au=S.au||[];S.cl=S.cl||[];S.fr=S.fr||[];S.ac=S.ac||[];S.sm=S.sm||[]}
 function db(m,f){try{var r=indexedDB.open('espoir_v03',1);r.onupgradeneeded=function(){r.result.createObjectStore('k')};r.onsuccess=function(){f(r.result.transaction('k',m).objectStore('k'))};r.onerror=function(){f(null)}}catch(e){f(null)}}
-function save(){if(!LOADED)return;if(L)saveL();bkSoon();S._t=Date.now();var j=JSON.stringify(S);db('readwrite',function(s){if(s){s.put(j,'s');try{s.put(j,'snap-'+dk())}catch(e){}}});try{localStorage.setItem(KEY,j)}catch(e){}}
+function save(){if(DEMO)return;if(!LOADED)return;if(L)saveL();bkSoon();S._t=Date.now();var j=JSON.stringify(S);db('readwrite',function(s){if(s){s.put(j,'s');try{s.put(j,'snap-'+dk())}catch(e){}}});try{localStorage.setItem(KEY,j)}catch(e){}}
 var LOADED=false,CORR=0,LSRC='',PST='?';
 function pj(t){try{var o=JSON.parse(t);return o&&o.mv&&o.p?o:null}catch(e){return null}}
 function dk(t){var d=new Date(t||Date.now());return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
@@ -257,7 +258,7 @@ function vStock(){
   if(!S.p.length)h+='<div class="card mut">Votre stock est vide.'+(TIPS[S.biz.type]?'<p style="margin:10px 0 0;color:var(--ink)"><b>Conseil pour votre activité :</b> '+TIPS[S.biz.type]+'</p>':'')+'</div>';
   S.p.forEach(function(p){
     var m=p.cout>0?Math.round((p.vente-p.cout)/p.cout*100):0,k=p.vente>0?Math.round((p.vente-p.cout)/p.vente*100):0;
-    h+='<div class="card"><div class="row" style="border:0;padding:0"><b>'+esc(p.nom)+'</b>'+(p.svc?'<span class="mut">Service</span>':'<span class="'+(p.qte<=p.seuil?'neg':'')+'"><b>'+p.qte+'</b> '+esc(p.u||'')+' en stock</span>'+(p.ua&&p.f>1&&p.qte>=p.f?'<br><span class="mut">= '+Math.floor(p.qte/p.f)+' '+esc(p.ua)+(p.qte%p.f?' et '+Math.round((p.qte%p.f)*100)/100+' '+esc(p.u||''):'')+'</span>':''))+'</div><div class="mut">Coût moyen '+fmt(p.cout)+' \u2022 Vente '+fmt(p.vente)+' \u2022 '+plab(p)+(p.exp?' \u2022 Péremption '+new Date(p.exp).toLocaleDateString('fr-FR'):'')+'<br>Taux de marge '+m+' % \u2022 Taux de marque '+k+' % \u2022 Valeur '+fmt(Math.max(p.qte,0)*p.cout)+' (coût) / '+fmt(Math.max(p.qte,0)*p.vente)+' (vente)</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="s" onclick="reap(\''+p.id+'\')">+ Entrée</button><button class="s" onclick="perte(\''+p.id+'\')">Perte</button><button class="s" onclick="inv(\''+p.id+'\')">Inventaire</button><button class="s" onclick="delP(\''+p.id+'\')">Supprimer</button></div></div>';
+    h+='<div class="card"><div class="row" style="border:0;padding:0"><b>'+esc(p.nom)+'</b>'+(p.svc?'<span class="mut">Service</span>':'<span class="'+(p.qte<=p.seuil?'neg':'')+'"><b>'+p.qte+'</b> '+esc(p.u||'')+' en stock</span>'+(p.ua&&p.f>1&&p.qte>=p.f?'<br><span class="mut">= '+Math.floor(p.qte/p.f)+' '+esc(p.ua)+(p.qte%p.f?' et '+Math.round((p.qte%p.f)*100)/100+' '+esc(p.u||''):'')+'</span>':''))+'</div><div class="mut">Coût moyen '+fmt(p.cout)+' \u2022 Vente '+fmt(p.vente)+' \u2022 '+plab(p)+(p.exp?' \u2022 Péremption '+new Date(p.exp).toLocaleDateString('fr-FR'):'')+'<br>Taux de marge '+m+' % \u2022 Taux de marque '+k+' % \u2022 Valeur '+fmt(Math.max(p.qte,0)*p.cout)+' (coût) / '+fmt(Math.max(p.qte,0)*p.vente)+' (vente)</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="s" onclick="reap(\''+p.id+'\')">+ Entrée</button><button class="s" onclick="perte(\''+p.id+'\')">Perte</button><button class="s" onclick="inv(\''+p.id+'\')">Inventaire</button><button class="s" onclick="editP(\''+p.id+'\')">Modifier</button><button class="s" onclick="delP(\''+p.id+'\')">Supprimer</button></div></div>';
   });
   var l=S.sm.slice(-8).reverse();
   if(l.length)h+='<div class="card"><h2>Mouvements de stock</h2>'+l.map(function(m){return'<div class="row"><span><b>'+esc(m.nom)+'</b><br><span class="mut">'+TS[m.type]+' \u2022 '+new Date(m.t).toLocaleDateString('fr-FR')+(m.motif?' \u2022 '+esc(m.motif):'')+'</span></span><b class="'+(m.q<0?'neg':'pos')+'">'+(m.q>0?'+':'')+m.q+'</b></div>'}).join('')+'</div>';
@@ -292,7 +293,7 @@ function lossVal(m){return -m.q*m.cout}
 function ask(title,F,cb,msg,okl){
   MD=cb;var h='<div class="mb"><h2>'+esc(title)+'</h2>'+(msg?'<p class="mut" style="margin:0 0 6px">'+esc(msg)+'</p>':'');
   F.forEach(function(f,i){h+='<label>'+esc(f.l)+'</label>';
-    if(f.o)h+='<select id="md'+i+'">'+f.o.map(function(x){return'<option>'+esc(x)+'</option>'}).join('')+'</select>';
+    if(f.o)h+='<select id="md'+i+'">'+f.o.map(function(x){return'<option'+(f.sel===x?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select>';
     else h+='<input id="md'+i+'" type="'+(f.t||'text')+'"'+(f.t==='number'?' inputmode="decimal"':'')+' value="'+esc(f.v==null?'':f.v)+'">'});
   h+='<div style="display:flex;gap:8px;margin-top:14px"><button class="s" style="flex:1;padding:12px" onclick="mdx()">Annuler</button><button class="b" style="flex:2;margin:0" onclick="mdok('+F.length+')">'+(okl||'Valider')+'</button></div></div>';
   $('md').innerHTML=h;$('md').style.display='flex';
@@ -390,7 +391,7 @@ function ok(x){return !!(CU&&RP[CU.role]&&RP[CU.role][x])}
 function hp(p){var h=5381,t='espoir|'+p+'|v1';for(var r=0;r<800;r++)for(var i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return h.toString(36)}
 function aud(act,det){S.au.push({id:uid(),t:Date.now(),u:CU?CU.nom:'',act:act,det:det||''});if(S.au.length>2000)S.au.shift()}
 function bump(){clearTimeout(idle);if(CU)idle=setTimeout(lock,300000)}
-function lock(){if(CU){aud('Verrouillage','');save()}CU=null;R()}
+function lock(){if(DEMO)return toast('Verrouillage désactivé en mode démonstration');if(CU){aud('Verrouillage','');save()}CU=null;R()}
 function vPin0(){return'<div class="card"><h2>Protégez votre activité</h2><p class="mut">Créez le code PIN du propriétaire. Il sera demandé à chaque ouverture.</p><label>Votre nom</label><input id="p0n" value="'+esc(S.biz.resp||'')+'"><label>Code PIN (4 à 6 chiffres)</label><input id="p0a" type="password" inputmode="numeric" maxlength="6"><label>Confirmer le PIN</label><input id="p0b" type="password" inputmode="numeric" maxlength="6"><button class="b" onclick="savePin0()">Enregistrer</button></div>'}
 function savePin0(){
   var n=$('p0n').value.trim(),a=$('p0a').value,b=$('p0b').value;
@@ -399,7 +400,7 @@ function savePin0(){
   if(a!==b)return toast('Les deux PIN sont différents');
   CU={id:uid(),nom:n,role:'prop',pin:hp(a)};S.us.push(CU);aud('Création du compte propriétaire',n);save();tab='home';bump();R();secours();
 }
-function vLock(){return'<div class="card"><h2>Connexion</h2><label>Utilisateur</label><select id="lu">'+S.us.map(function(u){return'<option value="'+u.id+'">'+esc(u.nom)+' ('+RL[u.role]+')</option>'}).join('')+'</select><label>Code PIN</label><input id="lp" type="password" inputmode="numeric" maxlength="6"><button class="b" onclick="login()">Ouvrir</button><button class="s" style="width:100%;margin-top:10px;padding:11px" onclick="forgotPin()">PIN oublié ?</button></div>'}
+function vLock(){return'<div class="card"><h2>Connexion</h2><label>Utilisateur</label><select id="lu">'+S.us.map(function(u){return'<option value="'+u.id+'">'+esc(u.nom)+' ('+RL[u.role]+')</option>'}).join('')+'</select><label>Code PIN</label><input id="lp" type="password" inputmode="numeric" maxlength="6"><button class="b" onclick="login()">Ouvrir</button><button class="s" style="width:100%;margin-top:10px;padding:11px" onclick="forgotPin()">PIN oublié ?</button><button class="s" style="width:100%;margin-top:8px;padding:11px" onclick="askDemo()">Mode démonstration</button></div>'}
 function login(){
   var u=S.us.find(function(x){return x.id===$('lu').value});
   if(LK.n>=5&&Date.now()<LK.t)return toast('Trop d\u2019essais : patientez 30 secondes');
@@ -449,7 +450,7 @@ function clot(){
   if(e!==0&&!m)return toast('Justifiez l\u2019écart');
   var id=uid();S.cl.push({id:id,t:Date.now(),u:CU.nom,acc:a.id,theo:t,reel:r,ec:e,motif:m});
   if(e!==0)post('ecart',a.id,e,id,m);
-  aud('Clôture de caisse',lab(a)+' \u2022 écart '+fa(e,a.cur)+(m?' : '+m:''));save();toast(e===0?'Caisse clôturée : juste':'Caisse clôturée, écart enregistré');R();
+  aud('Clôture de caisse',lab(a)+' \u2022 écart '+fa(e,a.cur)+(m?' : '+m:''));save();toast(e===0?'Caisse clôturée : juste':'Caisse clôturée, écart enregistré');R();if(ok('biz')&&!(S.lx&&isToday(S.lx)))yes('Sauvegarde du soir','Envoyer maintenant la sauvegarde chiffrée sur votre WhatsApp ?',exportFile,'Envoyer');
 }
 function roleFilter(){
   var A=$('app'),a=A.children,i;
@@ -458,6 +459,7 @@ function roleFilter(){
     if(tab==='more')for(i=0;i<a.length;i++)if(i===0||i>2)a[i].style.display='none';
   }
   if(!ok('biz'))[].forEach.call(A.querySelectorAll('button[onclick*="biz"]'),function(x){x.style.display='none'});
+  if(DEMO&&tab==='more')for(i=5;i<a.length;i++)a[i].style.display='none';
   if(!ok('stk')&&tab==='stock'){a[0].style.display='none';a[1].style.display='none';[].forEach.call(A.querySelectorAll('button'),function(x){x.style.display='none'})}
 }
 function navH(){return TABS.filter(function(t){return allowed().indexOf(t[0])>=0}).map(function(t){return'<button class="'+(t[0]===tab?'on':'')+'" onclick="go(\''+t[0]+'\')"><span>'+t[1]+'</span>'+t[2]+'</button>'}).join('')}
@@ -484,8 +486,13 @@ function recuO(id){
   if(o.liv)l.push('Livraison prévue : '+new Date(o.liv).toLocaleDateString('fr-FR'));
   l.push('','Merci de votre confiance.');shareT(l.join('\n'));
 }
-function appCard(){return'<div class="card"><h2>Application</h2><div class="mut">ESPOIR Finance v1.1 \u2022 '+licShort()+'</div>'+(ok('biz')?'<button class="b" onclick="go(\'lic\')">Abonnement</button>':'')+'<button class="b" onclick="installApp()">Installer sur l\u2019écran d\u2019accueil</button><button class="b" onclick="shareWA(usageTxt())">Envoyer le rapport d\u2019usage</button><button class="b" onclick="shareT(\'Retour ESPOIR Finance v1.1 (\'+S.biz.nom+\') :\\n\')">Envoyer un retour (WhatsApp)</button></div>'}
-function installApp(){if(DP){DP.prompt();DP=null}else yes('Installer l\u2019application','Dans Chrome : menu \u22ee puis « Installer l\u2019application » ou « Ajouter à l\u2019écran d\u2019accueil ». L\u2019installation complète demande que l\u2019application soit publiée en ligne (https).',function(){},'Compris')}
+function appCard(){return'<div class="card"><h2>Application</h2><div class="mut">ESPOIR Finance v1.4 \u2022 '+licShort()+'</div>'+(ok('biz')?'<button class="b" onclick="go(\'lic\')">Abonnement</button>':'')+'<button class="b" onclick="installApp()">Installer sur l\u2019écran d\u2019accueil</button><button class="b" onclick="shareWA(usageTxt())">Envoyer le rapport d\u2019usage</button><button class="b" onclick="shareT(\'Retour ESPOIR Finance v1.4 (\'+S.biz.nom+\') :\\n\')">Envoyer un retour (WhatsApp)</button></div>'}
+function installApp(){
+  if(DP){DP.prompt();DP=null;return}
+  var ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/.test(ua),sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+  var m=sa?'L\u2019application est déjà installée sur cet appareil.':ios?'Sur iPhone : ouvrez cette adresse dans Safari, touchez l\u2019icône Partager, puis « Sur l\u2019écran d\u2019accueil ». Ouvrez ensuite toujours l\u2019application par son icône.':'Dans Chrome : menu \u22ee, puis « Installer l\u2019application » ou « Ajouter à l\u2019écran d\u2019accueil ». Si l\u2019option manque : mettez Chrome à jour dans le Play Store, vérifiez la date du téléphone et l\u2019espace libre, puis réessayez.';
+  yes('Installer l\u2019application',m,function(){},'Compris');
+}
 var oc=[],ocm={};
 function oPaid(o){return S.mv.reduce(function(s,e){return e.ref===o.id&&kind(e)==='aco'?s+fc(e):s},0)}
 function oDue(o){var d=o.total-oPaid(o);return d<dust()?0:d}
@@ -533,7 +540,7 @@ function annuleCmd(id){
   var o=S.od.find(function(x){return x.id===id});if(!o||o.st!=='en')return;
   ask('Annuler la commande : '+o.client,[{l:'Motif de l\u2019annulation'}],function(v){
     var mo=v[0].trim();if(!mo)return toast('Motif obligatoire');
-    S.mv.filter(function(e){return e.ref===o.id&&e.type==='aco'&&!e.ann}).forEach(function(x){S.mv.push({id:uid(),t:Date.now(),type:'annul',of:'aco',rev:x.id,acc:x.acc,cur:x.cur,m:-x.m,taux:x.taux,ref:x.ref,note:'Annulation commande : '+mo,u:CU?CU.nom:''});x.ann=true});
+    S.mv.filter(function(e){return e.ref===o.id&&e.type==='aco'&&!e.ann}).forEach(function(x){S.mv.push({id:uid(),t:Date.now(),type:'annul',of:'aco',rev:x.id,acc:x.acc,cur:x.cur,m:-x.m,taux:x.taux,ref:x.ref,note:'Annulation commande : '+mo});x.ann=true});
     o.st='annulee';aud('Annulation commande',o.client+' : '+mo);save();toast('Commande annulée, acomptes remboursés');R();
   },'Les acomptes reçus seront remboursés (écritures inverses).');
 }
@@ -552,10 +559,10 @@ var L=null,TRIAL=14,WA_ADMIN='243819919984',PLANS=[['std','Standard'],['pro','Pr
 function nid(){var c='ABCDEFGHJKMNPQRSTUVWXYZ23456789',a=[],s='',i;if(window.crypto&&crypto.getRandomValues){a=new Uint8Array(8);crypto.getRandomValues(a)}else for(i=0;i<8;i++)a.push(Math.floor(Math.random()*256));for(i=0;i<8;i++)s+=c[a[i]%c.length];return s}
 function fid(i){return i.slice(0,4)+'-'+i.slice(4)}
 function mergeL(a,b){
-  if(!a&&!b)return{id:nid(),t0:Date.now(),last:Date.now(),exp:0,plan:'essai',used:[]};
+  if(!a&&!b)return{id:nid(),t0:Date.now(),last:Date.now(),exp:0,plan:'essai',used:[],ext:false};
   if(!a||!b)return a||b;
   var o=a.t0<=b.t0?a:b,ua=a.used||[],ub=b.used||[];
-  return{id:o.id,t0:Math.min(a.t0,b.t0),last:Math.max(a.last,b.last),exp:Math.max(a.exp||0,b.exp||0),plan:(a.exp||0)>=(b.exp||0)?a.plan:b.plan,used:ua.concat(ub.filter(function(x){return ua.indexOf(x)<0}))};
+  return{id:o.id,t0:Math.min(a.t0,b.t0),last:Math.max(a.last,b.last),exp:Math.max(a.exp||0,b.exp||0),plan:(a.exp||0)>=(b.exp||0)?a.plan:b.plan,used:ua.concat(ub.filter(function(x){return ua.indexOf(x)<0})),ext:!!(a.ext||b.ext)};
 }
 function loadL(cb){
   var a=null;try{a=JSON.parse(localStorage.getItem('espoir_lic'))}catch(e){}
@@ -569,7 +576,7 @@ function lst(){
 }
 function tamp(){return Date.now()<L.last-D}
 function allowed(){return lst().s==='expire'?['home','lic']:TR[CU.role]}
-function licShort(){var t=lst();return t.s==='actif'?'Abonnement actif ('+t.j+' j)':t.s==='essai'?'Essai gratuit ('+t.j+' j)':'Abonnement expiré'}
+function licShort(){var t=lst();return t.s==='expire'?'Abonnement expiré':L.plan==='ext'?'Essai prolongé ('+t.j+' j)':L.plan==='pilote'?'Période pilote ('+t.j+' j)':t.s==='actif'?'Abonnement actif ('+t.j+' j)':'Essai gratuit ('+t.j+' j)'}
 function b64d(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
 async function activer(code){
   try{
@@ -584,7 +591,14 @@ async function activer(code){
     if(L.used.indexOf(p[4])>=0)return'Ce code a déjà été utilisé';
     if(n>parseInt(p[1])*D+45*D)return'Code périmé : demandez-en un nouveau';
     var days=parseInt(p[2]),base=Math.max(n,L.exp||0,L.exp?0:L.t0+TRIAL*D);
-    L.exp=base+days*D;L.plan=p[3];L.used.push(p[4]);saveL();aud('Activation',p[3]+' \u2022 '+days+' jours');if(S)save();return'ok';
+    if(p[3]==='ext'){
+      if(L.ext)return'La prolongation de 3 jours a déjà été utilisée';
+      if(L.exp&&L.plan!=='ext'&&L.plan!=='pilote')return'La prolongation est réservée à la période d\u2019essai';
+      L.ext=true;
+    }
+    if(p[3]==='pilote'){var pe=Math.max(L.exp||0,L.t0+days*D);if(pe<=n)return'Ce code pilote arrive trop tard : il ne prolonge plus rien';L.exp=pe}
+    else L.exp=base+days*D;
+    L.plan=p[3];L.used.push(p[4]);saveL();aud('Activation',p[3]+' \u2022 '+days+' jours');if(S)save();return'ok';
   }catch(e){return'Code invalide'}
 }
 function shareWA(t){window.open('https://wa.me/'+WA_ADMIN+'?text='+encodeURIComponent(t),'_blank');if(!WA_ADMIN)toast('Choisissez le contact dans WhatsApp')}
@@ -593,21 +607,27 @@ function askAct(){
   shareWA('Bonjour, je souhaite activer ESPOIR Finance.\nActivité : '+S.biz.nom+(S.biz.resp?'\nContact : '+S.biz.resp:'')+(S.biz.tel?' ('+S.biz.tel+')':'')+'\nAppareil : '+fid(L.id)+'\nOffre : '+pl+'\nDurée : '+$('lmo').value+' mois');
 }
 function doAct(){activer($('lcd').value).then(function(r){if(r==='ok'){toast('Application activée. Merci !');R()}else toast(r)})}
+function slab(){var t=lst();return t.s==='expire'?'abonnement expiré':L.plan==='ext'?'essai prolongé':L.plan==='pilote'?'période pilote':t.s==='actif'?'abonnement actif':'essai gratuit'}
+function isEssai(){var t=lst();return t.s==='essai'||(t.s==='actif'&&(L.plan==='ext'||L.plan==='pilote'))}
+function canExt(){var t=lst();return !L.ext&&L.plan!=='std'&&L.plan!=='pro'&&(t.s==='essai'?t.j<=7:(t.s==='expire'&&!L.exp))}
+function waShow(){return WA_ADMIN?'0'+WA_ADMIN.replace(/^243/,''):'\u2014'}
+function askExt(){shareWA(['Bonjour, je demande une prolongation de 3 jours de mon essai ESPOIR Finance.','Activité : '+S.biz.nom,'Responsable : '+(S.biz.resp||'')+' '+(S.biz.tel||''),'Appareil : '+fid(L.id)].join('\n'))}
 function licB0(){
   var t=lst(),o=ok('biz'),b=o?'<button class="s" style="margin-top:8px" onclick="go(\'lic\')">Voir l\u2019abonnement</button>':'',w=tamp()?'<div class="al r">La date de ce téléphone semble incorrecte. Corrigez-la pour éviter un blocage.</div>':'';
   if(t.s==='expire')return w+'<div class="al r"><b>Abonnement expiré.</b> Vos données sont conservées. '+(o?'Activez l\u2019application pour continuer à enregistrer.':'Contactez le propriétaire.')+'<br>'+b+'</div>';
-  if(t.j<=7)return w+'<div class="al"><b>'+(t.s==='essai'?'Essai gratuit':'Abonnement')+' : '+t.j+' jour(s) restant(s).</b><br>'+b+'</div>';
+  if(t.j<=7)return w+'<div class="al"><b>'+(isEssai()?(L.plan==='pilote'?'Période pilote':'Essai gratuit'):'Abonnement')+' : '+t.j+' jour(s) restant(s).</b><br>'+b+'</div>';
   return w+(t.s==='essai'?'<div class="mut" style="margin-bottom:8px">Essai gratuit : '+t.j+' jours restants</div>':'');
 }
 function vLic(){
-  var t=lst(),h='<div class="card"><h2>Abonnement</h2>'+(t.s==='actif'?'<div class="big pos" style="font-size:22px">Actif</div><div class="mut">Jusqu\u2019au '+new Date(L.exp).toLocaleDateString('fr-FR')+' ('+t.j+' jours) \u2022 offre '+esc(L.plan)+'</div>':t.s==='essai'?'<div class="big" style="font-size:22px">Essai gratuit</div><div class="mut">'+t.j+' jour(s) restant(s)</div>':'<div class="big neg" style="font-size:22px">Expiré</div><div class="mut">Vos données sont conservées. Activez pour continuer à enregistrer.</div>')+'</div>';
-  h+='<div class="card"><h2>1. Demander l\u2019activation</h2><div class="mut">Identifiant de cet appareil</div><div class="big" style="font-family:monospace;letter-spacing:2px">'+fid(L.id)+'</div><label>Offre</label><select id="lpl">'+PLANS.map(function(x){return'<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</select><label>Durée</label><select id="lmo"><option value="1">1 mois</option><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option></select><button class="b" onclick="askAct()">Demander par WhatsApp</button></div>';
+  var t=lst(),h='<div class="card"><h2>Abonnement</h2>'+(t.s==='actif'?'<div class="big pos" style="font-size:22px">'+(L.plan==='ext'?'Essai prolongé':L.plan==='pilote'?'Période pilote':'Actif')+'</div><div class="mut">Jusqu\u2019au '+new Date(L.exp).toLocaleDateString('fr-FR')+' ('+t.j+' jours) \u2022 offre '+esc(L.plan)+'</div>':t.s==='essai'?'<div class="big" style="font-size:22px">Essai gratuit</div><div class="mut">'+t.j+' jour(s) restant(s)</div>':'<div class="big neg" style="font-size:22px">Expiré</div><div class="mut">Vos données sont conservées. Activez pour continuer à enregistrer.</div>')+'</div>';
+  h+=(canExt()?'<div class="card"><h2>Besoin de 3 jours de plus ?</h2><p class="mut">Une seule prolongation, sur demande, avant votre premier abonnement.</p><button class="b" onclick="askExt()">Demander 3 jours par WhatsApp</button></div>':'');
+  h+='<div class="card"><h2>1. Demander l\u2019activation</h2><div class="mut" style="margin-bottom:8px">Service client ESPOIR (WhatsApp) : <b>'+waShow()+'</b></div><div class="mut">Identifiant de cet appareil</div><div class="big" style="font-family:monospace;letter-spacing:2px">'+fid(L.id)+'</div><label>Offre</label><select id="lpl">'+PLANS.map(function(x){return'<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</select><label>Durée</label><select id="lmo"><option value="1">1 mois</option><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option></select><button class="b" onclick="askAct()">Demander par WhatsApp</button></div>';
   h+='<div class="card"><h2>2. Saisir le code reçu</h2><textarea id="lcd" placeholder="Collez ici le code ESP\u2026"></textarea><button class="b" onclick="doAct()">Activer</button></div><div class="card"><h2>Mes données</h2><p class="mut">Elles ne sont jamais supprimées. Gardez toujours une sauvegarde.</p><button class="b" style="margin-top:0" onclick="bk()">Copier la sauvegarde</button></div>';
   return h;
 }
 function usageTxt(){
   var d={},n=function(t){d[new Date(t).toDateString()]=1};S.v.forEach(function(v){n(v.t)});S.mv.forEach(function(e){n(e.t)});S.au.forEach(function(a){n(a.t)});
-  return['Rapport d\u2019usage ESPOIR Finance v1.1',S.biz.nom+' ('+S.biz.type+')','Appareil : '+fid(L.id),'Première utilisation : '+new Date(L.t0).toLocaleDateString('fr-FR'),'Jours d\u2019activité : '+Object.keys(d).length,'Ventes : '+S.v.length+' \u2022 Commandes : '+S.od.length,'Achats : '+S.ac.length+' \u2022 Dépenses : '+S.mv.filter(function(e){return e.type==='dep'}).length,'Pertes/inventaires : '+S.sm.filter(function(m){return m.type==='perte'||m.type==='inv'}).length+' \u2022 Clôtures : '+S.cl.length,'Produits : '+S.p.length+' \u2022 Utilisateurs : '+S.us.length,'Statut : '+lst().s+' ('+lst().j+' j)'].join('\n');
+  return['Rapport d\u2019usage ESPOIR Finance v1.4',S.biz.nom+' ('+S.biz.type+')','Appareil : '+fid(L.id),'Première utilisation : '+new Date(L.t0).toLocaleDateString('fr-FR'),'Jours d\u2019activité : '+Object.keys(d).length,'Ventes : '+S.v.length+' \u2022 Commandes : '+S.od.length,'Achats : '+S.ac.length+' \u2022 Dépenses : '+S.mv.filter(function(e){return e.type==='dep'}).length,'Pertes/inventaires : '+S.sm.filter(function(m){return m.type==='perte'||m.type==='inv'}).length+' \u2022 Clôtures : '+S.cl.length,'Produits : '+S.p.length+' \u2022 Utilisateurs : '+S.us.length,'Statut : '+lst().s+' ('+lst().j+' j)'].join('\n');
 }
 var RPD='j';
 function rapData(p){
@@ -635,10 +655,8 @@ function rapTxt(){
   var r=rapData(RPD);
   return[S.biz.nom,'Rapport '+PN[RPD]+' \u2022 '+new Date().toLocaleDateString('fr-FR'),'','Ventes : '+fmt(r.ca),'Coût des marchandises : '+fmt(r.cg),'Marge brute : '+fmt(r.marge),'Dépenses : '+fmt(r.dep),'Pertes et écarts : '+fmt(r.pe),'Résultat estimatif : '+fmt(r.res),'','Encaissé : '+fmt(r.enc),'Créances : '+fmt(r.cr),'Dettes fournisseurs : '+fmt(r.df),'','Résultat de gestion, non comptable.'].join('\n');
 }
-
-/* CONFIGURATION SUPABASE MISE À JOUR */
 var CL=null,SB_URL='https://xtcavnzufebllzhxeowg.supabase.co',SB_KEY='sb_publishable_xstPIEdBFWhHzOTkn9W5fQ_HeE1qu9T',bkT=0;
-
+/* SB_URL et SB_KEY : adresse du projet Supabase et clé publique (publishable/anon). Elles ne sont pas secrètes. */
 try{CL=JSON.parse(localStorage.getItem('espoir_cloud'))}catch(e){}
 try{var zk=JSON.parse(localStorage.getItem('espoir_lk'));if(zk&&zk.n!==undefined)LK=zk}catch(e){}
 function lkSave(){try{localStorage.setItem('espoir_lk',JSON.stringify(LK))}catch(e){}}
@@ -653,7 +671,7 @@ async function enc(code,txt){var salt=crypto.getRandomValues(new Uint8Array(16))
 async function dec(code,blob){var p=blob.split('.');if(p[0]!=='v1')throw 0;var k=await ckey(code,b64d(p[1]));return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(p[2])},k,b64d(p[3])))}
 async function sb(fn,body){var h={'apikey':SB_KEY,'Content-Type':'application/json'};if(SB_KEY.indexOf('sb_')!==0)h.Authorization='Bearer '+SB_KEY;var r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:h,body:JSON.stringify(body)});if(!r.ok)throw new Error('http '+r.status);return r.json()}
 async function backupNow(silent){
-  if(!SB_URL||!CL||!CL.on)return;
+  if(DEMO||!SB_URL||!CL||!CL.on)return;
   try{
     if(!(window.crypto&&crypto.subtle))throw 0;
     var r=await sb('save_backup',{p_id:await cid(CL.code),p_blob:await enc(CL.code,JSON.stringify(S))});
@@ -661,7 +679,7 @@ async function backupNow(silent){
     if(!silent){toast('Sauvegarde en ligne réussie');R()}
   }catch(e){if(!silent)toast('Échec : vérifiez la connexion Internet')}
 }
-function bkSoon(){if(CL&&CL.on&&SB_URL&&!bkT)bkT=setTimeout(function(){bkT=0;backupNow(true)},45000)}
+function bkSoon(){if(!DEMO&&CL&&CL.on&&SB_URL&&!bkT)bkT=setTimeout(function(){bkT=0;backupNow(true)},45000)}
 function enableCloud(){
   if(!(window.crypto&&crypto.subtle))return toast('Ouvrez l\u2019application depuis son adresse https');
   secours(function(){CL.on=true;saveCL();aud('Sauvegarde en ligne activée','');save();backupNow(false)});
@@ -750,28 +768,56 @@ function cloudBanner(){
   if(!CL.last||Date.now()-CL.last>3*D)return'<div class="al r"><b>Sauvegarde en ligne en retard.</b> Connectez-vous à Internet, puis ouvrez Plus et appuyez sur Sauvegarder maintenant.</div>';
   return'';
 }
-function licBanner(){return[licB0(),startBanner(),cloudBanner(),stockBanner(),bkBanner()].filter(Boolean).slice(0,2).join('')}
+function licBanner(){return[licB0(),startBanner(),cloudBanner(),bkBanner(),stockBanner()].filter(Boolean).slice(0,2).join('')}
+function shareFile(t,n){
+  try{var f=new File([t],n,{type:'text/plain'});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:n,text:'Sauvegarde ESPOIR Finance'}).catch(function(){});return}}catch(e){}
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=n;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a)},500);
+  toast('Fichier enregistré dans Téléchargements : envoyez-le sur votre WhatsApp');
+}
 function exportFile(){
-  S.lx=Date.now();save();
-  var j=JSON.stringify(S),n='espoir-sauvegarde-'+dk()+'.json';
-  try{var f=new File([j],n,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:n}).catch(function(){});return}}catch(e){}
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([j],{type:'application/json'}));a.download=n;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a)},500);toast('Fichier enregistré dans Téléchargements');
+  if(DEMO)return toast('Indisponible en mode démonstration');
+  if(!(window.crypto&&crypto.subtle))return toast('Ouvrez l\u2019application depuis son adresse https');
+  var go=function(){
+    S.lx=Date.now();save();
+    enc(CL.code,JSON.stringify(S)).then(function(b){shareFile('ESPOIR1:'+b,'espoir-sauvegarde-'+dk()+'.txt')},function(){toast('Échec du chiffrement')});
+  };
+  if(!CL||!S.rv)return secours(go);
+  go();
 }
 function impFile(inp){
+  if(DEMO)return toast('Indisponible en mode démonstration');
   var f=inp.files&&inp.files[0];if(!f)return;var r=new FileReader();
-  r.onload=function(){var o=pj(r.result);if(!o)return toast('Fichier invalide');
-    yes('Importer la sauvegarde','Les données de cet appareil seront remplacées par celles du fichier ('+o.p.length+' produit(s), '+o.v.length+' vente(s)).',function(){S=o;norm();CU=null;LOADED=true;CORR=0;save();toast('Sauvegarde importée : connectez-vous');R()},'Importer');
-  };r.readAsText(f);
+  r.onload=function(){
+    var t=String(r.result||'').trim();
+    var apply=function(o,code){yes('Importer la sauvegarde','Les données de cet appareil seront remplacées par celles du fichier ('+o.p.length+' produit(s), '+o.v.length+' vente(s)).',function(){S=o;norm();CU=null;LOADED=true;CORR=0;if(code&&!CL){CL={code:code,last:0,t:0,on:false};saveCL()}save();toast('Sauvegarde importée : connectez-vous avec votre PIN');R()},'Importer')};
+    if(t.indexOf('ESPOIR1:')===0){
+      ask('Fichier chiffré',[{l:'Code de secours (ESP-\u2026)'}],function(v){
+        var c=String(v[0]).trim().toUpperCase().replace(/\s+/g,'');
+        dec(c,t.slice(8)).then(function(x){var o=pj(x);if(!o)return toast('Fichier invalide');apply(o,c)},function(){toast('Code de secours incorrect ou fichier abîmé')});
+      },'Ce fichier est chiffré. Entrez le code de secours noté à la création du compte.','Déchiffrer');
+    }else{var o=pj(t);if(!o)return toast('Fichier invalide');apply(o,'')}
+  };
+  r.readAsText(f);
 }
-function vCorr(){return'<div class="al r"><b>Les données de cet appareil n\u2019ont pas pu être lues.</b> Elles n\u2019ont pas été effacées : une copie est conservée.</div><div class="card"><h2>Récupérer mes données</h2><label>Importer un fichier de sauvegarde</label><input type="file" accept=".json,application/json" onchange="impFile(this)">'+(SB_URL?'<button class="b" onclick="askRestore(1)">Restaurer depuis le serveur</button>':'')+'<button class="b" style="background:var(--red);color:#fff" onclick="repartir()">Repartir de zéro</button></div>'}
+function rappelICS(){
+  var d=new Date(),y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2),ds=''+y+m+dd;
+  var t=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ESPOIR Finance//FR','BEGIN:VEVENT','UID:sauvegarde-quotidienne@espoir-finance','DTSTAMP:'+ds+'T000000Z','DTSTART:'+ds+'T183000','DTEND:'+ds+'T184500','RRULE:FREQ=DAILY','SUMMARY:Sauvegarde ESPOIR Finance','DESCRIPTION:Ouvrez ESPOIR Finance et envoyez la sauvegarde du jour sur votre WhatsApp.','BEGIN:VALARM','TRIGGER:PT0M','ACTION:DISPLAY','DESCRIPTION:Sauvegarde ESPOIR Finance','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/calendar'}));a.download='rappel-sauvegarde-espoir.ics';document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a)},500);
+  toast('Ouvrez le fichier pour ajouter le rappel de 18 h 30 à votre agenda');
+}
+function vCorr(){return'<div class="al r"><b>Les données de cet appareil n\u2019ont pas pu être lues.</b> Elles n\u2019ont pas été effacées : une copie est conservée.</div><div class="card"><h2>Récupérer mes données</h2><label>Importer un fichier de sauvegarde</label><input type="file" onchange="impFile(this)">'+(SB_URL?'<button class="b" onclick="askRestore(1)">Restaurer depuis le serveur</button>':'')+'<button class="b" style="background:var(--red);color:#fff" onclick="repartir()">Repartir de zéro</button></div>'}
 function repartir(){yes('Repartir de zéro','L\u2019application sera vide. La copie illisible reste conservée sur cet appareil.',function(){S=init();norm();LOADED=true;CORR=0;save();R()},'Repartir de zéro')}
 function diagCard(){
   if(!ok('adm'))return'';
   var sa=window.matchMedia&&matchMedia('(display-mode: standalone)').matches;
   return'<div class="card"><h2>État des données</h2><div class="mut">Produits : <b>'+S.p.length+'</b> \u2022 Ventes : <b>'+S.v.length+'</b> \u2022 Mouvements : <b>'+S.mv.length+'</b><br>Dernier enregistrement : '+(S._t?new Date(S._t).toLocaleString('fr-FR'):'\u2014')+'<br>Lu depuis : '+LSRC+' \u2022 Stockage protégé : '+PST+'<br>Mode : '+(sa?'application installée':'navigateur')+'<br>Adresse : '+esc(location.origin)+'</div></div>';
 }
+function restoreFileCard(){return'<div class="card"><h2>Changement de téléphone ?</h2><p class="mut">Retrouvez vos données avec le fichier de sauvegarde reçu sur votre WhatsApp. Il faudra votre code de secours.</p><label>Choisir le fichier</label><input type="file" onchange="impFile(this)"></div>'}
 function bkBanner(){
-  if(!ok('biz')||(CL&&CL.on)||!S.p.length||(S.lx&&Date.now()-S.lx<2*D))return'';
+  if(!ok('biz')||DEMO||!S.p.length)return'';
+  var act=S.v.some(function(v){return isToday(v.t)})||S.mv.some(function(e){return isToday(e.t)}),done=S.lx&&isToday(S.lx),online=CL&&CL.on&&CL.last&&isToday(CL.last);
+  if(new Date().getHours()>=18&&act&&!done&&!online)return'<div class="al r"><b>Sauvegarde du soir.</b> Envoyez le fichier chiffré sur votre WhatsApp : en cas de vol ou de changement de téléphone, vous retrouvez tout.<br><button class="s" style="margin-top:8px" onclick="exportFile()">Envoyer ma sauvegarde</button></div>';
+  if((CL&&CL.on)||(S.lx&&Date.now()-S.lx<2*D))return'';
   return'<div class="al"><b>Sauvegarde du jour.</b> Envoyez un fichier de sauvegarde à votre WhatsApp pour ne rien perdre.<br><button class="s" style="margin-top:8px" onclick="exportFile()">Sauvegarder maintenant</button></div>';
 }
 function stockBanner(){
@@ -792,7 +838,7 @@ function vStk(){
 function applyCount(){
   var mo=$('cm').value,n=0;
   S.p.forEach(function(p){var el=$('cq_'+p.id);if(!el)return;var c=nf(el.value);if(isNaN(c)||c<0||c===p.qte)return;var e=c-p.qte;S.sm.push({id:uid(),t:Date.now(),pid:p.id,nom:p.nom,q:e,type:'inv',motif:mo,cout:p.cout});p.qte=c;n++});
-  S.cnt=dk();aud('Point du stock',n+' écart(s) \u2022 '+mo);save();toast(n?n+' écarts enregistrés':'Stock conforme : point du jour validé');R();
+  S.cnt=dk();aud('Point du stock',n+' écart(s) \u2022 '+mo);save();toast(n?n+' écart(s) enregistré(s)':'Stock conforme : point du jour validé');R();
 }
 var CATS=['Loyer','Salaires','Transport','Électricité et groupe','Eau','Taxes et impôts','Emballage','Sécurité','Frais bancaires et Mobile Money','Divers'];
 function startBanner(){
@@ -879,114 +925,7 @@ function addOld(){
     aud('Ancienne dette',n+' '+fmt(m));save();toast('Dette enregistrée');R();
   },'Cette dette n\u2019est pas une vente du jour : elle ne change ni vos ventes ni votre argent en caisse.','Enregistrer');
 }
-function vArgent(){
-  var h='<div class="card"><h2>Mouvement d\u2019argent</h2><label>Type</label><select id="ot" onchange="tog()"><option value="dep">Dépense de l\u2019entreprise</option>'+(ok('adm')?'<option value="apo">Argent que j\u2019ajoute dans l\u2019activité</option><option value="pre">Argent que je prends pour moi</option><option value="trf">Transfert entre comptes</option>':'')+'</select><div id="ocv"><label>Catégorie de dépense</label><select id="ocat">'+CATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div><label id="ol">Compte</label><select id="oa" onchange="tog()">'+opts()+'</select><div id="odv" style="display:none"><label>Compte de destination</label><select id="od" onchange="tog()">'+opts()+'</select></div><label id="oml">Montant</label><input id="om" type="number" inputmode="decimal"><div id="orv" style="display:none"><label id="orl">Montant reçu</label><input id="or" type="number" inputmode="decimal"></div><div id="ofv" style="display:none"><label id="ofl">Frais du transfert (facultatif)</label><input id="ofr" type="number" inputmode="decimal"></div><label>Motif</label><input id="on" placeholder="Transport, loyer, retrait\u2026"><button class="b" onclick="addOp()">Enregistrer</button></div><h2>Journal</h2>';
-  var l=S.mv.slice(-15).reverse();
-  if(!l.length)h+='<div class="card mut">Aucun mouvement.</div>';
-  else h+='<div class="card">'+l.map(function(e){
-    var a=acc(e.acc),can=!e.ann&&e.type!=='annul';
-    return'<div class="row"><span><b>'+TY[e.type]+'</b> '+(e.ann?'<span class="mut">(annulé)</span>':'')+'<br><span class="mut">'+new Date(e.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' \u2022 '+esc(lab(a))+(e.note?' \u2022 '+esc(e.note):'')+'</span></span><span style="text-align:right"><b class="'+(e.m<0?'neg':'pos')+'">'+fa(e.m,e.cur)+'</b>'+(can?'<br><button class="s" onclick="annule(\''+e.id+'\')">Annuler</button>':'')+'</span></div>'}).join('')+'</div>';
-  return h+clCard();
-}
-function tog(){
-  var t=$('ot').value,f=acc($('oa').value),d=acc($('od').value),x=t==='trf';
-  $('odv').style.display=x?'block':'none';$('orv').style.display=x&&f.cur!==d.cur?'block':'none';
-  $('ocv').style.display=t==='dep'?'block':'none';$('ofv').style.display=x?'block':'none';
-  $('ol').textContent=x?'Compte source':t==='apo'?'Compte qui reçoit':'Compte débité';
-  $('oml').textContent='Montant ('+f.cur+')';$('orl').textContent='Montant reçu ('+d.cur+')';$('ofl').textContent='Frais du transfert ('+f.cur+', facultatif)';
-}
-function addOp(){
-  var t=$('ot').value,a=$('oa').value,f=acc(a),m=num('om'),n=$('on').value.trim();
-  if(!ok('adm')&&t!=='dep')return toast('Réservé au gérant ou au propriétaire');
-  if(!(m>0))return toast('Entrez un montant');
-  if(t==='dep'&&!n)return toast('Entrez le motif');
-  var run=function(){
-    if(t==='trf'){
-      var b=$('od').value,d=acc(b),m2=f.cur===d.cur?m:num('or'),fee=num('ofr')||0;
-      if(a===b)return toast('Choisissez deux comptes différents');
-      if(!(m2>0))return toast('Entrez le montant reçu');
-      var r=uid();post('trf',a,-m,r,n||'Transfert');post('trf',b,m2,r,n||'Transfert');
-      if(fee>0){post('dep',a,-fee,'','Frais de transfert');S.mv[S.mv.length-1].cat='Frais bancaires et Mobile Money'}
-    }else{post(t,a,t==='apo'?m:-m,'',n);if(t==='dep')S.mv[S.mv.length-1].cat=$('ocat').value}
-    aud('Mouvement',TY[t]+' '+fa(m,f.cur)+(n?' : '+n:''));save();toast('Mouvement enregistré');R();
-  };
-  if(t!=='apo'&&bal(f)<m)yes('Solde insuffisant','Le compte '+lab(f)+' est insuffisant. Continuer quand même ?',run);else run();
-}
-function annule(id){
-  var e=S.mv.find(function(x){return x.id===id});
-  if(!e||e.ann||e.type==='annul')return;
-  var run=function(mo){
-    var g=e.type==='trf'?S.mv.filter(function(x){return x.ref===e.ref&&x.type==='trf'&&!x.ann}):[e];
-    g.forEach(function(o){S.mv.push({id:uid(),t:Date.now(),type:'annul',of:o.type,rev:o.id,acc:o.acc,cur:o.cur,m:-o.m,taux:o.taux,ref:o.ref,cat:o.cat,note:'Annulation : '+mo,u:CU?CU.nom:''});o.ann=true});
-    aud('Annulation',TY[e.type]+' : '+mo);save();toast('Opération annulée (écriture inverse créée)');R();
-  };
-  if(Date.now()-e.t<6e5&&e.u===(CU?CU.nom:''))return yes('Annuler cette opération ?','Vous l\u2019avez saisie il y a moins de 10 minutes : annulation sans motif.',function(){run('Erreur de saisie')},'Annuler l\u2019opération');
-  ask('Annuler cette opération',[{l:'Motif de l\u2019annulation'}],function(v){var mo=v[0].trim();if(!mo)return toast('Motif obligatoire');run(mo)},'Une écriture inverse sera créée, rien n\u2019est effacé.');
-}
-function annuleVente(id){
-  var v=S.v.find(function(x){return x.id===id});if(!v||v.annul)return;
-  var run=function(mo){
-    S.mv.filter(function(e){return((e.ref===v.id&&e.type==='enc')||(v.ord&&e.ref===v.ord&&e.type==='aco'))&&!e.ann}).forEach(function(o){S.mv.push({id:uid(),t:Date.now(),type:'annul',of:o.type,rev:o.id,acc:o.acc,cur:o.cur,m:-o.m,taux:o.taux,ref:o.ref,note:'Annulation vente : '+mo,u:CU?CU.nom:''});o.ann=true});
-    v.items.forEach(function(i){var p=S.p.find(function(x){return x.id===i.pid});if(p&&!p.svc){p.qte+=i.qte;S.sm.push({id:uid(),t:Date.now(),pid:p.id,nom:p.nom,q:i.qte,type:'annulV',motif:mo,cout:i.cout})}});
-    aud('Annulation vente',fmt(v.total)+' : '+mo);v.annul=true;v.motif=mo;save();toast('Vente annulée, stock rétabli');R();
-  };
-  if(Date.now()-v.t<6e5&&v.u===(CU?CU.nom:''))return yes('Annuler cette vente ?','Vous l\u2019avez enregistrée il y a moins de 10 minutes : annulation sans motif. Les paiements seront remboursés et le stock rétabli.',function(){run('Erreur de saisie')},'Annuler la vente');
-  ask('Annuler cette vente',[{l:'Motif de l\u2019annulation'}],function(w){var mo=w[0].trim();if(!mo)return toast('Motif obligatoire');run(mo)},'Les paiements seront remboursés et le stock rétabli.');
-}
-function vPlus(){
-  var dl=S.v.filter(function(v){return due(v)>=1}),a0=S.acc[0];
-  var h=bizCard()+'<div class="card"><h2>Créances clients</h2>';
-  if(!dl.length)h+='<div class="mut">Aucune créance en cours.</div>';
-  dl.forEach(function(v){h+='<div style="padding:9px 0;border-bottom:1px solid var(--line)"><div class="row" style="border:0;padding:0"><span><b>'+esc(v.client)+'</b><br><span class="mut">'+new Date(v.t).toLocaleDateString('fr-FR')+' \u2022 Total '+fmt(v.total)+' \u2022 Payé '+fmt(paid(v))+'</span></span><b class="neg">'+fmt(due(v))+'</b></div><div style="display:flex;gap:6px;margin-top:6px"><input id="da_'+v.id+'" type="number" inputmode="decimal" style="width:34%" value="'+tc(due(v),a0.cur)+'"><select id="dc_'+v.id+'" style="width:42%" onchange="preDebt(\''+v.id+'\')">'+opts()+'</select><button class="s" onclick="pay(\''+v.id+'\')">Encaisser</button></div></div>'});
-  h+='</div><div class="card"><h2>Dernières ventes</h2>';
-  var vs=S.v.filter(function(v){return!v.ouv}).slice(-6).reverse();
-  if(!vs.length)h+='<div class="mut">Aucune vente.</div>';
-  vs.forEach(function(v){h+='<div class="row"><span>'+esc(v.client)+'<br><span class="mut">'+new Date(v.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></span><span style="text-align:right"><b>'+fmt(v.total)+'</b><br><button class="s" onclick="recu(\''+v.id+'\')">Reçu</button> '+(v.annul?'<span class="mut">annulée</span>':'<button class="s" onclick="annuleVente(\''+v.id+'\')">Annuler</button>')+'</span></div>'});
-  h+='</div><div class="card"><h2>Taux du jour</h2><label>1 USD = ? FC</label><input type="number" inputmode="numeric" value="'+S.taux+'" onchange="S.taux=parseFloat(this.value)||S.taux;S.txd=dk();aud(\'Taux du jour\',this.value);save();toast(\'Taux mis à jour\');R()"><p class="mut">Chaque opération garde le taux du moment où elle a été saisie.</p></div>'+
-  '<div class="card"><h2>Comptes</h2>'+S.acc.map(function(a){return'<div class="row"><span>'+esc(lab(a))+'</span><b>'+fa(bal(a),a.cur)+'</b></div>'}).join('')+'<label>Nouveau compte</label><input id="an" placeholder="Ex : Airtel Money, Banque"><label>Devise</label><select id="ad"><option>FC</option><option>USD</option></select><button class="b" onclick="addAcc()">Ajouter le compte</button></div>'+
-  '<div class="card"><h2>Sauvegarde</h2><p class="mut">Chaque jour, envoyez un fichier de sauvegarde à votre WhatsApp : c\u2019est votre assurance.</p><button class="b" style="margin-top:0" onclick="exportFile()">Envoyer un fichier de sauvegarde</button><button class="b" onclick="bk()">Copier la sauvegarde (texte)</button><label>Importer un fichier</label><input type="file" accept=".json,application/json" onchange="impFile(this)"><label>Restaurer</label><textarea id="rs" placeholder="Collez ici une sauvegarde"></textarea><button class="b" onclick="rest()">Restaurer</button></div>'+ouvCard()+diagCard()+secCard()+cloudCard()+appCard()+(ok('usr')?usrCard():'')+auCard();
-  return h;
-}
-function addAcc(){var n=$('an').value.trim();if(!n)return toast('Entrez un nom');S.acc.push({id:uid(),nom:n,cur:$('ad').value});save();toast('Compte ajouté');R()}
-function pay(id){
-  var v=S.v.find(function(x){return x.id===id}),a=acc($('dc_'+id).value),m=num('da_'+id),d=due(v);
-  if(!(m>0))return toast('Montant invalide');
-  if(m*(a.cur==='USD'?S.taux:1)>d-1)m=tc(d,a.cur);
-  post('enc',a.id,m,v.id,'Tranche '+v.client);aud('Encaissement créance',v.client+' '+fa(m,a.cur));save();toast('Tranche enregistrée');R();
-}
-function bk(){
-  var j=JSON.stringify(S),f=function(){ask('Copiez la sauvegarde',[{l:'Sauvegarde (sélectionnez tout et copiez)',v:j}],function(){})};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(j).then(function(){toast('Sauvegarde copiée')},f);else f();
-}
-function rest(){
-  try{var o=JSON.parse($('rs').value);if(!o.p||!o.v||!o.mv||!o.acc)throw 0;
-    yes('Restaurer la sauvegarde','Remplacer toutes les données actuelles ?',function(){S=o;norm();LOADED=true;CORR=0;save();toast('Restauré');R()});
-  }catch(e){toast('Sauvegarde invalide')}
-}
-var TABS=[['home','🏠','Caisse'],['sell','🛒','Vendre'],['stock','📦','Stock'],['ach','🚚','Achats'],['cmd','📋','Commande'],['arg','💱','Argent'],['more','⚙️','Plus'],['lic','🔑','Abonnement']];
-function R(){
-  $('cur').textContent=S.dev;$('ttl').textContent=S.biz?S.biz.nom:'ESPOIR Finance';
-  if(CORR){$('app').innerHTML=vCorr();$('nav').innerHTML='';return}
-  if(!S.biz){$('app').innerHTML=vBiz()+(SB_URL?'<div class="card"><h2>Déjà un compte ?</h2><p class="mut">Retrouvez vos données avec votre code de récupération.</p><button class="b" onclick="askRestore()">Restaurer mes données</button></div>':'');$('nav').innerHTML='';bizType(1);return}
-  if(!S.us.length){$('app').innerHTML=vPin0();$('nav').innerHTML='';return}
-  if(!CU){$('app').innerHTML=vLock();$('nav').innerHTML='';return}
-  var AL=allowed();if(AL.indexOf(tab)<0&&!((tab==='biz'||tab==='lic')&&ok('biz'))&&!(tab==='rap'&&ok('adm'))&&!(tab==='stk'&&ok('stk')&&lst().s!=='expire')&&!(tab==='ouv'&&ok('adm'))&&!(tab==='cli'&&lst().s!=='expire'&&TR[CU.role].indexOf('cmd')>=0))tab=AL[0];
-  if(tab==='biz'){$('app').innerHTML=vBiz();$('nav').innerHTML=navH();bizType(1);return}
-  $('app').innerHTML={home:vHome,sell:vSell,stock:vStock,arg:vArgent,ach:vAchats,cmd:vCmd,more:vPlus,lic:vLic,rap:vRap,stk:vStk,ouv:vOuv,cli:vCli}[tab]();
-  $('nav').innerHTML=navH();
-  if(tab==='sell'&&cart.length)pre();
-  if(tab==='arg'){tog();clUp()}
-  if(tab==='ach')fillCost();
-  if(tab==='ach'&&pc.length)preA();
-  if(tab==='sell'&&S.p.length)fillPrice();
-  if(tab==='cmd'&&oc.length)preO();
-  roleFilter();
-}
-if(window.addEventListener)window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();DP=e});
-if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(function(){});
-if(document.addEventListener){document.addEventListener('click',bump,true);document.addEventListener('keydown',bump,true);document.addEventListener('input',function(e){var t=e.target;if(!t||t.type!=='number')return;var v=parseFloat(t.value),n=t.nextElementSibling,big=v>=1000;if(n&&n.className==='fmh'){if(big)n.textContent=v.toLocaleString('fr-FR');else n.parentNode.removeChild(n)}else if(big){var d=document.createElement('div');d.className='fmh';d.textContent=v.toLocaleString('fr-FR');t.parentNode.insertBefore(d,t.nextSibling)}},true);document.addEventListener('visibilitychange',function(){if(document.hidden)backupNow(true)})}
-start();
-</script>
-</body>
-</html>
-
+var PMN=['Selon l\u2019activité','Prix fixe','Négociable','Prix libre'],PMV=['defaut','fixe','nego','libre'];
+function editP(id){
+  var p=S.p.find(function(x){return x.id===id});if(!p)return;
+  ask('Modifier : '+p.nom,[{l:'Nom',v:p.nom},{l:'Prix de vente ('+S.dev+')',t:'number',v:dp(p.vente)},{l:'Coût d\u2019achat ('+S
