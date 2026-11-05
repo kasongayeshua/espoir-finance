@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#12355b">
@@ -186,7 +188,7 @@ function setPM(m){PM=m;R()}
 function vSell(){
   if(!S.p.length)return'<div class="card"><h2>Vendre</h2><p class="mut">Ajoutez d\u2019abord vos produits dans Stock.</p><button class="b" onclick="go(\'stock\')">Aller au Stock</button></div>';
   var cur=selP(),tot=cartTot(),fq=freq();
-  var h='<div class="card"><h2>Nouvelle vente</h2>'+(S.p.length>8?'<input id="sqr" type="search" placeholder="Rechercher un produit\u2026" value="'+esc(SQ)+'" oninput="setSQ(this.value)">':'')+(fq.length>1?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+fq.map(function(p){return'<button class="s" onclick="pickP(\''+p.id+'\')">'+esc(p.nom)+'</button>'+'</div>':'')+'</div>':'')+'<label>Produit</label><select id="sp" onchange="fillPrice()">'+prodOpts()+'</select><div id="suv" style="display:none"><label>Vendre par</label><select id="su" onchange="fillPrice()"></select></div><div class="grid"><div><label>Quantité</label><input id="sq" type="number" inputmode="decimal" value="1"></div><div><label>Prix unitaire ('+S.dev+')</label><input id="sx" type="number" inputmode="decimal" value="'+dp(cur.vente)+'"'+(pol(cur).mode==='fixe'?' disabled':'')+'></div></div><div class="mut" id="sh" style="margin-top:6px">'+hint(cur)+'</div><button class="b" onclick="addCart()">Ajouter au panier</button></div>';
+  var h='<div class="card"><h2>Nouvelle vente</h2>'+(S.p.length>8?'<input id="sqr" type="search" placeholder="Rechercher un produit\u2026" value="'+esc(SQ)+'" oninput="setSQ(this.value)">':'')+(fq.length>1?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+fq.map(function(p){return'<button class="s" onclick="pickP(\''+p.id+'\')">'+esc(p.nom)+'</button>'}).join('')+'</div>':'')+'<label>Produit</label><select id="sp" onchange="fillPrice()">'+prodOpts()+'</select><div id="suv" style="display:none"><label>Vendre par</label><select id="su" onchange="fillPrice()"></select></div><div class="grid"><div><label>Quantité</label><input id="sq" type="number" inputmode="decimal" value="1"></div><div><label>Prix unitaire ('+S.dev+')</label><input id="sx" type="number" inputmode="decimal" value="'+dp(cur.vente)+'"'+(pol(cur).mode==='fixe'?' disabled':'')+'></div></div><div class="mut" id="sh" style="margin-top:6px">'+hint(cur)+'</div><button class="b" onclick="addCart()">Ajouter au panier</button></div>';
   if(cart.length){
     var cls=S.cs.map(function(c){return'<option value="'+esc(c.nom)+'">'}).join('');
     h+='<div class="card"><h2>Panier</h2>'+cart.map(function(i,n){return'<div class="row"><span>'+esc(i.nom)+' \u00d7 '+(i.ql||i.qte+' \u00e0 '+fmt(i.prix))+(i.cat>i.prix?' <span class="mut">(remise '+Math.round((1-i.prix/i.cat)*100)+' %)</span>':'')+'</span><span><b>'+fmt(i.prix*i.qte)+'</b> <button class="s" onclick="cart.splice('+n+',1);R()">\u2715</button></span></div>'}).join('')+
@@ -988,7 +990,7 @@ function doTrf(a,b,m){
   aud('Transfert',lab(a)+'\u2192'+lab(b)+' '+fa(m,a.cur));save();toast('Transfert effectué');R();
 }
 function vMore(){
-  return appCard()+secCard()+cloudCard()+restoreFileCard()+'<div class="card"><h2>Sauvegarde locale</h2><p class="mut">Copiez vos données ou téléchargez un rappel pour votre agenda.</p><button class="b" onclick="bk()">Copier la sauvegarde</button><button class="b" onclick="rappelICS()">Télécharger le rappel d\u2019agenda (18 h 30)</button></div>'+auCard()+'<div class="card"><h2>Sécurité</h2><button class="b" onclick="lock()">Verrouiller l\u2019application</button><button class="b" style="background:var(--red);color:#fff" onclick="wipe()">Effacer les données de cet appareil</button></div>';
+  return appCard()+secCard()+cloudCard()+restoreFileCard()+'<div class="card"><h2>Sauvegarde locale</h2><p class="mut">Copiez vos données ou téléchargez un rappel pour votre agenda.</p><button class="b" onclick="bk()">Copier la sauvegarde</button><button class="b" onclick="rappelICS()">Télécharger le rappel d\u2019agenda (20 h 00)</button></div>'+auCard()+'<div class="card"><h2>Sécurité</h2><button class="b" onclick="lock()">Verrouiller l\u2019application</button><button class="b" style="background:var(--red);color:#fff" onclick="wipe()">Effacer les données de cet appareil</button></div>';
 }
 function bk(){
   if(DEMO)return toast('Indisponible en mode démonstration');
