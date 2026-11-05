@@ -1,3 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12355b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>ESPOIR Finance</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#14213d;--mut:#667085;--btn:#12355b;--bi:#fff;--acc:#f5b800;--red:#c8102e;--ok:#1b7f4b;--line:#e3dfd3}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1726;--card:#16233a;--ink:#eef1f6;--mut:#9aa7bd;--btn:#f5b800;--bi:#14213d;--line:#263757}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:84px}
+header{flex-wrap:wrap;background:var(--btn);color:var(--bi);padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header b{font-size:19px}
+header button{background:transparent;color:var(--bi);border:1.5px solid var(--bi);border-radius:20px;padding:5px 14px;font-weight:700}
+main{max-width:620px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+h2{font-size:18px;margin:0 0 10px}
+.big{font-size:30px;font-weight:800;margin:2px 0}
+.mut{color:var(--mut);font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.k{border-left:5px solid var(--acc);padding-left:10px}
+label{display:block;font-size:14px;color:var(--mut);margin:8px 0 3px}
+input,select{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:8px;font-size:16px;background:var(--bg);color:var(--ink)}
+button.b{width:100%;margin-top:12px;padding:13px;border:0;border-radius:10px;background:var(--btn);color:var(--bi);font-size:16px;font-weight:700}
+button.s{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:6px 10px;font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.al{border-left:5px solid var(--acc);background:var(--card);padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid var(--line);border-left:5px solid var(--acc)}
+.al.r{border-left-color:var(--red)}
+.neg{color:var(--red)}.pos{color:var(--ok)}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:10px 0;color:var(--mut);font-size:10.5px;font-weight:600}
+nav button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--acc)}
+nav span{display:block;font-size:18px}
+#t{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:14px;display:none;z-index:9;max-width:90%}
+.fmh{font-size:13px;color:var(--ok);font-weight:700;margin-top:2px}
+details summary{cursor:pointer;font-weight:700}
+#dm{display:none;flex-basis:100%;gap:8px;align-items:center;justify-content:space-between;background:#f5b800;color:#14213d;margin:10px -16px -12px;padding:8px 16px;font-size:13px;font-weight:700}
+#dm button{background:#14213d;color:#fff;border:0;border-radius:14px;padding:5px 10px;font-weight:700}
+#md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;align-items:flex-end;justify-content:center}
+.mb{background:var(--card);width:100%;max-width:620px;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+textarea{width:100%;height:70px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:12px}
+</style>
+</head>
+<body>
 <header><b id="ttl">ESPOIR Finance</b><span><button onclick="lock()">🔒</button> <button id="cur" onclick="swap()">FC</button></span><div id="dm"></div></header>
 <main id="app"></main>
 <div id="t"></div>
@@ -137,7 +186,7 @@ function setPM(m){PM=m;R()}
 function vSell(){
   if(!S.p.length)return'<div class="card"><h2>Vendre</h2><p class="mut">Ajoutez d\u2019abord vos produits dans Stock.</p><button class="b" onclick="go(\'stock\')">Aller au Stock</button></div>';
   var cur=selP(),tot=cartTot(),fq=freq();
-  var h='<div class="card"><h2>Nouvelle vente</h2>'+(S.p.length>8?'<input id="sqr" type="search" placeholder="Rechercher un produit\u2026" value="'+esc(SQ)+'" oninput="setSQ(this.value)">':'')+(fq.length>1?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+fq.map(function(p){return'<button class="s" onclick="pickP(\''+p.id+'\')">'+esc(p.nom)+'</button>'}).join('')+'</div>':'')+'<label>Produit</label><select id="sp" onchange="fillPrice()">'+prodOpts()+'</select><div id="suv" style="display:none"><label>Vendre par</label><select id="su" onchange="fillPrice()"></select></div><div class="grid"><div><label>Quantité</label><input id="sq" type="number" inputmode="decimal" value="1"></div><div><label>Prix unitaire ('+S.dev+')</label><input id="sx" type="number" inputmode="decimal" value="'+dp(cur.vente)+'"'+(pol(cur).mode==='fixe'?' disabled':'')+'></div></div><div class="mut" id="sh" style="margin-top:6px">'+hint(cur)+'</div><button class="b" onclick="addCart()">Ajouter au panier</button></div>';
+  var h='<div class="card"><h2>Nouvelle vente</h2>'+(S.p.length>8?'<input id="sqr" type="search" placeholder="Rechercher un produit\u2026" value="'+esc(SQ)+'" oninput="setSQ(this.value)">':'')+(fq.length>1?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+fq.map(function(p){return'<button class="s" onclick="pickP(\''+p.id+'\')">'+esc(p.nom)+'</button>'+'</div>':'')+'</div>':'')+'<label>Produit</label><select id="sp" onchange="fillPrice()">'+prodOpts()+'</select><div id="suv" style="display:none"><label>Vendre par</label><select id="su" onchange="fillPrice()"></select></div><div class="grid"><div><label>Quantité</label><input id="sq" type="number" inputmode="decimal" value="1"></div><div><label>Prix unitaire ('+S.dev+')</label><input id="sx" type="number" inputmode="decimal" value="'+dp(cur.vente)+'"'+(pol(cur).mode==='fixe'?' disabled':'')+'></div></div><div class="mut" id="sh" style="margin-top:6px">'+hint(cur)+'</div><button class="b" onclick="addCart()">Ajouter au panier</button></div>';
   if(cart.length){
     var cls=S.cs.map(function(c){return'<option value="'+esc(c.nom)+'">'}).join('');
     h+='<div class="card"><h2>Panier</h2>'+cart.map(function(i,n){return'<div class="row"><span>'+esc(i.nom)+' \u00d7 '+(i.ql||i.qte+' \u00e0 '+fmt(i.prix))+(i.cat>i.prix?' <span class="mut">(remise '+Math.round((1-i.prix/i.cat)*100)+' %)</span>':'')+'</span><span><b>'+fmt(i.prix*i.qte)+'</b> <button class="s" onclick="cart.splice('+n+',1);R()">\u2715</button></span></div>'}).join('')+
@@ -752,9 +801,9 @@ function impFile(inp){
 }
 function rappelICS(){
   var d=new Date(),y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2),ds=''+y+m+dd;
-  var t=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ESPOIR Finance//FR','BEGIN:VEVENT','UID:sauvegarde-quotidienne@espoir-finance','DTSTAMP:'+ds+'T000000Z','DTSTART:'+ds+'T183000','DTEND:'+ds+'T184500','RRULE:FREQ=DAILY','SUMMARY:Sauvegarde ESPOIR Finance','DESCRIPTION:Ouvrez ESPOIR Finance et envoyez la sauvegarde du jour sur votre WhatsApp.','BEGIN:VALARM','TRIGGER:PT0M','ACTION:DISPLAY','DESCRIPTION:Sauvegarde ESPOIR Finance','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  var t=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ESPOIR Finance//FR','BEGIN:VEVENT','UID:sauvegarde-quotidienne@espoir-finance','DTSTAMP:'+ds+'T000000Z','DTSTART:'+ds+'T200000','DTEND:'+ds+'T201500','RRULE:FREQ=DAILY','SUMMARY:Sauvegarde ESPOIR Finance','DESCRIPTION:Ouvrez ESPOIR Finance et envoyez la sauvegarde du jour sur votre WhatsApp.','BEGIN:VALARM','TRIGGER:PT0M','ACTION:DISPLAY','DESCRIPTION:Sauvegarde ESPOIR Finance','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/calendar'}));a.download='rappel-sauvegarde-espoir.ics';document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a)},500);
-  toast('Ouvrez le fichier pour ajouter le rappel de 18 h 30 à votre agenda');
+  toast('Ouvrez le fichier pour ajouter le rappel de 20 h 00 à votre agenda');
 }
 function vCorr(){return'<div class="al r"><b>Les données de cet appareil n\u2019ont pas pu être lues.</b> Elles n\u2019ont pas été effacées : une copie est conservée.</div><div class="card"><h2>Récupérer mes données</h2><label>Importer un fichier de sauvegarde</label><input type="file" onchange="impFile(this)">'+(SB_URL?'<button class="b" onclick="askRestore(1)">Restaurer depuis le serveur</button>':'')+'<button class="b" style="background:var(--red);color:#fff" onclick="repartir()">Repartir de zéro</button></div>'}
 function repartir(){yes('Repartir de zéro','L\u2019application sera vide. La copie illisible reste conservée sur cet appareil.',function(){S=init();norm();LOADED=true;CORR=0;save();R()},'Repartir de zéro')}
@@ -767,7 +816,7 @@ function restoreFileCard(){return'<div class="card"><h2>Changement de téléphon
 function bkBanner(){
   if(!ok('biz')||DEMO||!S.p.length)return'';
   var act=S.v.some(function(v){return isToday(v.t)})||S.mv.some(function(e){return isToday(e.t)}),done=S.lx&&isToday(S.lx),online=CL&&CL.on&&CL.last&&isToday(CL.last);
-  if(new Date().getHours()>=18&&act&&!done&&!online)return'<div class="al r"><b>Sauvegarde du soir.</b> Envoyez le fichier chiffré sur votre WhatsApp : en cas de vol ou de changement de téléphone, vous retrouvez tout.<br><button class="s" style="margin-top:8px" onclick="exportFile()">Envoyer ma sauvegarde</button></div>';
+  if(new Date().getHours()>=20&&act&&!done&&!online)return'<div class="al r"><b>Sauvegarde du soir.</b> Envoyez le fichier chiffré sur votre WhatsApp : en cas de vol ou de changement de téléphone, vous retrouvez tout.<br><button class="s" style="margin-top:8px" onclick="exportFile()">Envoyer ma sauvegarde</button></div>';
   if((CL&&CL.on)||(S.lx&&Date.now()-S.lx<2*D))return'';
   return'<div class="al"><b>Sauvegarde du jour.</b> Envoyez un fichier de sauvegarde à votre WhatsApp pour ne rien perdre.<br><button class="s" style="margin-top:8px" onclick="exportFile()">Sauvegarder maintenant</button></div>';
 }
@@ -879,178 +928,87 @@ function addOld(){
 var PMN=['Selon l\u2019activité','Prix fixe','Négociable','Prix libre'],PMV=['defaut','fixe','nego','libre'];
 function editP(id){
   var p=S.p.find(function(x){return x.id===id});if(!p)return;
-  ask('Modifier : '+p.nom,[{l:'Nom',v:p.nom},{l:'Prix de vente ('+S.dev+')',t:'number',v:dp(p.vente)},{l:'Coût d\u2019achat ('+S.dev+') : à corriger seulement en cas d\u2019erreur',t:'number',v:dp(p.cout)},{l:'Alerte à partir de',t:'number',v:p.seuil||0},{l:'Prix minimum autorisé ('+S.dev+', facultatif)',t:'number',v:p.min>0?dp(p.min):''},{l:'Politique de prix',o:PMN,sel:PMN[Math.max(0,PMV.indexOf(p.mode||'defaut'))]}],function(v){
-    var n=v[0].trim(),pv=toFC(nf(v[1])),cc=toFC(nf(v[2])),sd=nf(v[3]),mn=nf(v[4])||0;
-    if(!n||!(pv>0)||!(cc>=0))return toast('Nom, prix et coût valides requis');
-    if(S.p.some(function(x){return x.id!==p.id&&nrm(x.nom)===nrm(n)}))return toast('Un autre produit porte déjà ce nom');
-    var ch='prix '+fmt(p.vente)+' \u2192 '+fmt(pv)+(Math.round(p.cout)!==Math.round(cc)?', coût '+fmt(p.cout)+' \u2192 '+fmt(cc):'');
-    p.nom=n;p.vente=pv;p.cout=cc;if(!isNaN(sd))p.seuil=sd;p.min=mn>0?toFC(mn):0;p.mode=PMV[Math.max(0,PMN.indexOf(v[5]))];
-    aud('Produit modifié',n+' : '+ch);save();toast('Produit modifié');R();
-  },'Les ventes déjà enregistrées ne changent pas.','Enregistrer');
+  ask('Modifier : '+p.nom,[{l:'Nom',v:p.nom},{l:'Prix de vente ('+S.dev+')',t:'number',v:dp(p.vente)},{l:'Coût d\u2019achat ('+S.dev+')',t:'number',v:dp(p.cout)},{l:'Quantité',t:'number',v:p.qte},{l:'Alerte à partir de',t:'number',v:p.seuil}],function(v){
+    var n=v[0].trim(),x=toFC(num(v[1])),c=toFC(num(v[2])),q=num(v[3]),s=num(v[4]);
+    if(!n||!(x>0)||!(q>=0))return toast('Nom, prix et quantité requis');
+    p.nom=n;p.vente=x;p.cout=c>=0?c:0;p.qte=q;p.seuil=s>=0?s:5;save();toast('Produit modifié');R();
+  });
 }
-function demoSet(t){
-  var b=[{nom:'Sucre',cout:2800,vente:3500,qte:25,u:'kg'},{nom:'Savon',cout:700,vente:1000,qte:40},{nom:'Huile',cout:5500,vente:6500,qte:12,u:'litre'},{nom:'Riz',cout:2000,vente:2500,qte:50,u:'kg'},{nom:'Biscuit',cout:300,vente:500,qte:60,u:'paquet'}];
-  if(/boissons|jus|bar/i.test(t))b=[{nom:'Bière 65 cl',cout:1800,vente:2500,qte:48,u:'bouteille',ua:'casier',f:12,seuil:12},{nom:'Soda 50 cl',cout:900,vente:1500,qte:72,u:'bouteille',ua:'casier',f:24,seuil:24},{nom:'Jus 1 L',cout:1500,vente:2200,qte:24,u:'bouteille',ua:'casier',f:12},{nom:'Eau 50 cl',cout:500,vente:800,qte:48,u:'bouteille'}];
-  else if(/ciment/i.test(t))b=[{nom:'Ciment 50 kg',cout:21000,vente:24000,qte:100,u:'sac',ua:'tonne',f:20,seuil:20},{nom:'Fer à béton 8 mm',cout:9000,vente:11000,qte:60},{nom:'Sable (charge)',cout:15000,vente:20000,qte:10}];
-  else if(/coiffure/i.test(t))b=[{nom:'Coupe',cout:0,vente:5000,svc:true},{nom:'Tresses',cout:0,vente:15000,svc:true},{nom:'Soin',cout:0,vente:8000,svc:true},{nom:'Shampoing',cout:2500,vente:4000,qte:10}];
-  else if(/pâtisserie|charcuterie|restaurant/i.test(t))b=[{nom:'Gâteau',cout:1500,vente:3000,qte:20},{nom:'Pain',cout:200,vente:500,qte:80},{nom:'Jambon',cout:14000,vente:18000,qte:8,u:'kg'},{nom:'Plat du jour',cout:0,vente:6000,svc:true}];
-  else if(/pharmacie/i.test(t)){var e=new Date(Date.now()+120*D).toISOString().slice(0,10);b=[{nom:'Paracétamol',cout:1000,vente:1500,qte:30,u:'boîte',exp:e},{nom:'Sirop toux',cout:3500,vente:5000,qte:12,exp:e},{nom:'Pansements',cout:800,vente:1200,qte:25,u:'boîte'}]}
-  return b;
+var TABS=[['home','Accueil','🏠'],['sell','Vendre','🛒'],['stock','Stock','📦'],['ach','Achats','📥'],['cmd','Commandes','📋'],['arg','Caisse','💵'],['more','Plus','⚙️']];
+function R(){
+  bump();roleFilter();
+  $('ttl').textContent=S.biz?S.biz.nom:'ESPOIR Finance';
+  $('cur').textContent=S.dev;
+  var A=$('app');
+  if(!LOADED){A.innerHTML='<div class="card mut">Chargement des données...</div>';return}
+  if(CORR){A.innerHTML=vCorr();return}
+  if(!CU){A.innerHTML=S.us.length?vLock():vPin0();return}
+  if(tab==='home')A.innerHTML=vHome();
+  else if(tab==='sell')A.innerHTML=vSell();
+  else if(tab==='stock')A.innerHTML=vStock();
+  else if(tab==='ach')A.innerHTML=vAchats();
+  else if(tab==='cmd')A.innerHTML=vCmd();
+  else if(tab==='arg')A.innerHTML=vArg();
+  else if(tab==='more')A.innerHTML=vMore();
+  else if(tab==='biz')A.innerHTML=vBiz();
+  else if(tab==='lic')A.innerHTML=vLic();
+  else if(tab==='rap')A.innerHTML=vRap();
+  else if(tab==='ouv')A.innerHTML=vOuv();
+  else if(tab==='stk')A.innerHTML=vStk();
+  $('nav').innerHTML=allowed().indexOf(tab)>=0?navH():'';
 }
-function startDemo(t){
-  if(DEMO)return;
-  REAL=S;REALCU=CU;cart=[];pc=[];oc=[];ocm={};PM='full';
-  var d=init();d.biz={nom:'Démo '+t,type:t,resp:'Agent ESPOIR',tel:'',adr:'',mode:TYP[t]||'nego',max:10};
-  d.us=[{id:'demo',nom:'Agent',role:'prop',pin:'demo'}];d.txd=dk();d.ouv=Date.now();d.cnt=dk();d.rv='demo';d.lx=Date.now();
-  S=d;DEMO=true;CU=d.us[0];
-  post('ouv','a1',150000,'','Solde de départ');post('ouv','a2',100,'','Solde de départ');
-  demoSet(t).forEach(function(x){S.p.push(Object.assign({id:uid(),mode:'defaut',min:0,seuil:5,ua:'',f:1,exp:'',svc:false,u:'pièce',qte:0},x))});
-  var cid=ensureClient('Client démo','0812345678');S.cs[0].promis=dk(Date.now()+2*D);
-  S.v.push({id:uid(),t:Date.now()-20*D,items:[],total:25000,client:'Client démo',cid:cid,taux:S.taux,u:'Agent',ouv:true});
-  tab='home';R();
+function vArg(){
+  var acs=S.acc.map(function(a){
+    var b=bal(a),rows=S.mv.filter(function(e){return e.acc===a.id}).slice(-10).reverse();
+    return'<div class="card"><h2>'+esc(lab(a))+'</h2><div class="big '+(b<0?'neg':'')+'">'+fa(b,a.cur)+'</div><div style="display:flex;gap:6px;margin:8px 0"><button class="s" onclick="mvt(\'enc\',\''+a.id+'\')">+ Entrée</button><button class="s" onclick="mvt(\'dep\',\''+a.id+'\')">\u2212 Sortie</button><button class="s" onclick="mvt(\'trf\',\''+a.id+'\')">Transfert</button></div><details><summary class="mut">Derniers mouvements</summary>'+
+    (rows.length?rows.map(function(e){return'<div class="row"><span><b>'+(TY[e.type]||e.type)+'</b><br><span class="mut">'+new Date(e.t).toLocaleDateString('fr-FR')+(e.note?' \u2022 '+esc(e.note):'')+'</span></span><b class="'+(e.m<0?'neg':'pos')+'">'+fa(e.m,e.cur)+'</b></div>'}).join(''):'<div class="mut" style="margin-top:6px">Aucun mouvement.</div>')+'</details></div>';
+  }).join('');
+  return acs+clCard()+usrCard()+ouvCard()+diagCard();
 }
-function exitDemo(){yes('Quitter la démonstration','Tout ce qui a été saisi en démonstration disparaît. Les vrais chiffres ne sont pas touchés.',function(){S=REAL;CU=REALCU;DEMO=false;REAL=null;cart=[];pc=[];oc=[];ocm={};PM='full';tab='home';R()},'Quitter la démo')}
-function restartDemo(){yes('Recommencer la démonstration','Les données de démonstration seront remises à leur état de départ.',function(){var t=S.biz.type;S=REAL;CU=REALCU;DEMO=false;startDemo(t)},'Recommencer')}
-function askDemo(){ask('Mode démonstration',[{l:'Type d\u2019activité à présenter',o:Object.keys(TYP),sel:'Boutique'}],function(v){startDemo(v[0])},'Tout ce que vous saisissez en démonstration disparaît quand vous quittez. Les vrais chiffres du client ne sont jamais touchés.','Lancer la démo')}
-function demoEntry(){return'<div class="card"><h2>Vous êtes agent ESPOIR ?</h2><p class="mut">Le mode démonstration permet de montrer et de faire pratiquer l\u2019application sans rien enregistrer dans les vrais chiffres du client.</p><button class="b" onclick="askDemo()">Mode démonstration</button></div>'}
-function demoCard(){return'<div class="card"><h2>Mode démonstration (agents)</h2><p class="mut">Pour faire une démonstration sans toucher à vos vrais chiffres. Tout disparaît quand on quitte.</p><button class="b" onclick="askDemo()">Lancer une démonstration</button></div>'}
-var RO=['Tout effacer sauf le compte : opérations, produits et clients (garder l\u2019activité, les PIN et les comptes)','Effacer seulement les opérations et les clients (garder les produits)','Tout effacer, retour à l\u2019écran de bienvenue'];
-function snapUndo(){var j=JSON.stringify({t:Date.now(),d:JSON.stringify(S)});try{localStorage.setItem('espoir_undo',j)}catch(e){}db('readwrite',function(w){if(w)w.put(j,'undo')})}
-function purgeSnaps(){db('readwrite',function(w){if(!w||!w.getAllKeys)return;var g=w.getAllKeys();g.onsuccess=function(){(g.result||[]).forEach(function(k){if(String(k).indexOf('snap-')===0)w.delete(k)})}})}
-function askReset(){
-  ask('Remise à zéro',[{l:'Que voulez-vous effacer ?',o:RO},{l:'Votre PIN de propriétaire',t:'password'},{l:'Tapez EFFACER pour confirmer'}],function(v){
-    if(hp(v[1])!==CU.pin)return toast('PIN incorrect');
-    if(String(v[2]).trim().toUpperCase()!=='EFFACER')return toast('Tapez EFFACER pour confirmer');
-    doReset(RO.indexOf(v[0]));
-  },'Une copie de sécurité est gardée 7 jours : vous pourrez annuler. Pensez aussi à envoyer un fichier de sauvegarde avant.','Remettre à zéro');
+function mvt(type,aid){
+  var a=acc(aid),isTrf=type==='trf';
+  var F=[{l:isTrf?'Montant à transférer ('+a.cur+')':'Montant ('+a.cur+')',t:'number'},{l:isTrf?'Vers le compte':(type==='enc'?'Motif (ex : apport, vente divers\u2026)':'Motif (loyer, transport\u2026)'),o:isTrf?S.acc.filter(function(x){return x.id!==aid}).map(lab):CATS}];
+  ask((TY[type]||type)+' : '+lab(a),F,function(v){
+    var m=nf(v[0]);if(!(m>0))return toast('Montant invalide');
+    if(type==='dep')m=-m;
+    if(isTrf){
+      var b=accL(v[1]);if(!b)return toast('Compte destinataire invalide');
+      if(bal(a)<m)return yes('Solde insuffisant','Le compte '+lab(a)+' est insuffisant.',function(){doTrf(a,b,m)});
+      doTrf(a,b,m);
+    }else{
+      if(type==='dep'&&bal(a)<Math.abs(m))return yes('Solde insuffisant','Le compte '+lab(a)+' est insuffisant.',function(){post(type,a.id,m,'',v[1]);aud(TY[type],fa(m,a.cur));save();toast('Mouvement enregistré');R()});
+      post(type,a.id,m,'',v[1]);aud(TY[type],fa(m,a.cur));save();toast('Mouvement enregistré');R();
+    }
+  });
 }
-function doReset(o){
-  snapUndo();purgeSnaps();
-  var old=S,n=init();
-  n.taux=old.taux;n.dev=old.dev;n.acc=old.acc.map(function(a){return{id:a.id,nom:a.nom,cur:a.cur}});
-  if(o<2){n.biz=old.biz;n.us=old.us;n.rv=old.rv}
-  if(o===1)n.p=old.p;
-  S=n;norm();cart=[];pc=[];oc=[];ocm={};PM='full';tab='home';
-  if(o===2)CU=null;
-  aud('Remise à zéro',RO[o]);save();toast('Remise à zéro effectuée');R();
+function doTrf(a,b,m){
+  post('trf',a.id,-m,'','Vers '+lab(b));
+  var r=b.cur===a.cur?m:(b.cur==='USD'?m/S.taux:m*S.taux);
+  post('trf',b.id,r,'','Depuis '+lab(a));
+  aud('Transfert',lab(a)+'\u2192'+lab(b)+' '+fa(m,a.cur));save();toast('Transfert effectué');R();
 }
-function undoReset(){
-  var u=null;try{u=JSON.parse(localStorage.getItem('espoir_undo'))}catch(e){}
-  if(!u||Date.now()-u.t>7*D)return toast('Aucune copie à restaurer');
-  var o=pj(u.d);if(!o)return toast('Copie illisible');
-  yes('Annuler la remise à zéro','Les données reviendront dans l\u2019état du '+new Date(u.t).toLocaleString('fr-FR')+'. Les données actuelles seront remplacées.',function(){S=o;norm();CU=null;LOADED=true;save();toast('Données restaurées : connectez-vous');R()},'Restaurer');
-}
-function resetCard(){
-  var u=null;try{u=JSON.parse(localStorage.getItem('espoir_undo'))}catch(e){}
-  var ok2=u&&Date.now()-u.t<=7*D;
-  return'<div class="card"><h2>Remise à zéro</h2><p class="mut">Pour effacer les essais avant de commencer les vraies opérations. Demande votre PIN. Une copie de sécurité est gardée 7 jours.</p><button class="b" style="background:var(--red);color:#fff" onclick="askReset()">Remettre à zéro\u2026</button>'+(ok2?'<button class="b" onclick="undoReset()">Annuler la dernière remise à zéro</button><p class="mut">Copie du '+new Date(u.t).toLocaleString('fr-FR')+'</p>':'')+'</div>';
-}
-function vArgent(){
-  var h='<div class="card"><h2>Mouvement d\u2019argent</h2><label>Type</label><select id="ot" onchange="tog()"><option value="dep">Dépense de l\u2019entreprise</option>'+(ok('adm')?'<option value="apo">Argent que j\u2019ajoute dans l\u2019activité</option><option value="pre">Argent que je prends pour moi</option><option value="trf">Transfert entre comptes</option>':'')+'</select><div id="ocv"><label>Catégorie de dépense</label><select id="ocat">'+CATS.map(function(c){return'<option>'+c+'</option>'}).join('')+'</select></div><label id="ol">Compte</label><select id="oa" onchange="tog()">'+opts()+'</select><div id="odv" style="display:none"><label>Compte de destination</label><select id="od" onchange="tog()">'+opts()+'</select></div><label id="oml">Montant</label><input id="om" type="number" inputmode="decimal"><div id="orv" style="display:none"><label id="orl">Montant reçu</label><input id="or" type="number" inputmode="decimal"></div><div id="ofv" style="display:none"><label id="ofl">Frais du transfert (facultatif)</label><input id="ofr" type="number" inputmode="decimal"></div><label>Motif</label><input id="on" placeholder="Transport, loyer, retrait\u2026"><button class="b" onclick="addOp()">Enregistrer</button></div><h2>Journal</h2>';
-  var l=S.mv.slice(-15).reverse();
-  if(!l.length)h+='<div class="card mut">Aucun mouvement.</div>';
-  else h+='<div class="card">'+l.map(function(e){
-    var a=acc(e.acc),can=!e.ann&&e.type!=='annul';
-    return'<div class="row"><span><b>'+TY[e.type]+'</b> '+(e.ann?'<span class="mut">(annulé)</span>':'')+'<br><span class="mut">'+new Date(e.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+' \u2022 '+esc(lab(a))+(e.note?' \u2022 '+esc(e.note):'')+'</span></span><span style="text-align:right"><b class="'+(e.m<0?'neg':'pos')+'">'+fa(e.m,e.cur)+'</b>'+(can?'<br><button class="s" onclick="annule(\''+e.id+'\')">Annuler</button>':'')+'</span></div>'}).join('')+'</div>';
-  return h+clCard();
-}
-function tog(){
-  var t=$('ot').value,f=acc($('oa').value),d=acc($('od').value),x=t==='trf';
-  $('odv').style.display=x?'block':'none';$('orv').style.display=x&&f.cur!==d.cur?'block':'none';
-  $('ocv').style.display=t==='dep'?'block':'none';$('ofv').style.display=x?'block':'none';
-  $('ol').textContent=x?'Compte source':t==='apo'?'Compte qui reçoit':'Compte débité';
-  $('oml').textContent='Montant ('+f.cur+')';$('orl').textContent='Montant reçu ('+d.cur+')';$('ofl').textContent='Frais du transfert ('+f.cur+', facultatif)';
-}
-function addOp(){
-  var t=$('ot').value,a=$('oa').value,f=acc(a),m=num('om'),n=$('on').value.trim();
-  if(!ok('adm')&&t!=='dep')return toast('Réservé au gérant ou au propriétaire');
-  if(!(m>0))return toast('Entrez un montant');
-  if(t==='dep'&&!n)return toast('Entrez le motif');
-  var run=function(){
-    if(t==='trf'){
-      var b=$('od').value,d=acc(b),m2=f.cur===d.cur?m:num('or'),fee=num('ofr')||0;
-      if(a===b)return toast('Choisissez deux comptes différents');
-      if(!(m2>0))return toast('Entrez le montant reçu');
-      var r=uid();post('trf',a,-m,r,n||'Transfert');post('trf',b,m2,r,n||'Transfert');
-      if(fee>0){post('dep',a,-fee,'','Frais de transfert');S.mv[S.mv.length-1].cat='Frais bancaires et Mobile Money'}
-    }else{post(t,a,t==='apo'?m:-m,'',n);if(t==='dep')S.mv[S.mv.length-1].cat=$('ocat').value}
-    aud('Mouvement',TY[t]+' '+fa(m,f.cur)+(n?' : '+n:''));save();toast('Mouvement enregistré');R();
-  };
-  if(t!=='apo'&&bal(f)<m)yes('Solde insuffisant','Le compte '+lab(f)+' est insuffisant. Continuer quand même ?',run);else run();
-}
-function annule(id){
-  var e=S.mv.find(function(x){return x.id===id});
-  if(!e||e.ann||e.type==='annul')return;
-  var run=function(mo){
-    var g=e.type==='trf'?S.mv.filter(function(x){return x.ref===e.ref&&x.type==='trf'&&!x.ann}):[e];
-    g.forEach(function(o){S.mv.push({id:uid(),t:Date.now(),type:'annul',of:o.type,rev:o.id,acc:o.acc,cur:o.cur,m:-o.m,taux:o.taux,ref:o.ref,cat:o.cat,note:'Annulation : '+mo,u:CU?CU.nom:''});o.ann=true});
-    aud('Annulation',TY[e.type]+' : '+mo);save();toast('Opération annulée (écriture inverse créée)');R();
-  };
-  if(Date.now()-e.t<6e5&&e.u===(CU?CU.nom:''))return yes('Annuler cette opération ?','Vous l\u2019avez saisie il y a moins de 10 minutes : annulation sans motif.',function(){run('Erreur de saisie')},'Annuler l\u2019opération');
-  ask('Annuler cette opération',[{l:'Motif de l\u2019annulation'}],function(v){var mo=v[0].trim();if(!mo)return toast('Motif obligatoire');run(mo)},'Une écriture inverse sera créée, rien n\u2019est effacé.');
-}
-function annuleVente(id){
-  var v=S.v.find(function(x){return x.id===id});if(!v||v.annul)return;
-  var run=function(mo){
-    S.mv.filter(function(e){return((e.ref===v.id&&e.type==='enc')||(v.ord&&e.ref===v.ord&&e.type==='aco'))&&!e.ann}).forEach(function(o){S.mv.push({id:uid(),t:Date.now(),type:'annul',of:o.type,rev:o.id,acc:o.acc,cur:o.cur,m:-o.m,taux:o.taux,ref:o.ref,note:'Annulation vente : '+mo,u:CU?CU.nom:''});o.ann=true});
-    v.items.forEach(function(i){var p=S.p.find(function(x){return x.id===i.pid});if(p&&!p.svc){p.qte+=i.qte;S.sm.push({id:uid(),t:Date.now(),pid:p.id,nom:p.nom,q:i.qte,type:'annulV',motif:mo,cout:i.cout})}});
-    aud('Annulation vente',fmt(v.total)+' : '+mo);v.annul=true;v.motif=mo;save();toast('Vente annulée, stock rétabli');R();
-  };
-  if(Date.now()-v.t<6e5&&v.u===(CU?CU.nom:''))return yes('Annuler cette vente ?','Vous l\u2019avez enregistrée il y a moins de 10 minutes : annulation sans motif. Les paiements seront remboursés et le stock rétabli.',function(){run('Erreur de saisie')},'Annuler la vente');
-  ask('Annuler cette vente',[{l:'Motif de l\u2019annulation'}],function(w){var mo=w[0].trim();if(!mo)return toast('Motif obligatoire');run(mo)},'Les paiements seront remboursés et le stock rétabli.');
-}
-function vPlus(){
-  var dl=S.v.filter(function(v){return due(v)>=1}),a0=S.acc[0];
-  var h=bizCard()+'<div class="card"><h2>Créances clients</h2>';
-  if(!dl.length)h+='<div class="mut">Aucune créance en cours.</div>';
-  dl.forEach(function(v){h+='<div style="padding:9px 0;border-bottom:1px solid var(--line)"><div class="row" style="border:0;padding:0"><span><b>'+esc(v.client)+'</b><br><span class="mut">'+new Date(v.t).toLocaleDateString('fr-FR')+' \u2022 Total '+fmt(v.total)+' \u2022 Payé '+fmt(paid(v))+'</span></span><b class="neg">'+fmt(due(v))+'</b></div><div style="display:flex;gap:6px;margin-top:6px"><input id="da_'+v.id+'" type="number" inputmode="decimal" style="width:34%" value="'+tc(due(v),a0.cur)+'"><select id="dc_'+v.id+'" style="width:42%" onchange="preDebt(\''+v.id+'\')">'+opts()+'</select><button class="s" onclick="pay(\''+v.id+'\')">Encaisser</button></div></div>'});
-  h+='</div><div class="card"><h2>Dernières ventes</h2>';
-  var vs=S.v.filter(function(v){return!v.ouv}).slice(-6).reverse();
-  if(!vs.length)h+='<div class="mut">Aucune vente.</div>';
-  vs.forEach(function(v){h+='<div class="row"><span>'+esc(v.client)+'<br><span class="mut">'+new Date(v.t).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></span><span style="text-align:right"><b>'+fmt(v.total)+'</b><br><button class="s" onclick="recu(\''+v.id+'\')">Reçu</button> '+(v.annul?'<span class="mut">annulée</span>':'<button class="s" onclick="annuleVente(\''+v.id+'\')">Annuler</button>')+'</span></div>'});
-  h+='</div><div class="card"><h2>Taux du jour</h2><label>1 USD = ? FC</label><input type="number" inputmode="numeric" value="'+S.taux+'" onchange="S.taux=parseFloat(this.value)||S.taux;S.txd=dk();aud(\'Taux du jour\',this.value);save();toast(\'Taux mis à jour\');R()"><p class="mut">Chaque opération garde le taux du moment où elle a été saisie.</p></div>'+
-  '<div class="card"><h2>Comptes</h2>'+S.acc.map(function(a){return'<div class="row"><span>'+esc(lab(a))+'</span><b>'+fa(bal(a),a.cur)+'</b></div>'}).join('')+'<label>Nouveau compte</label><input id="an" placeholder="Ex : Airtel Money, Banque"><label>Devise</label><select id="ad"><option>FC</option><option>USD</option></select><button class="b" onclick="addAcc()">Ajouter le compte</button></div>'+
-  '<div class="card"><h2>Sauvegarde</h2><p class="mut">Chaque jour, envoyez un fichier de sauvegarde à votre WhatsApp : c\u2019est votre assurance.</p><button class="b" style="margin-top:0" onclick="exportFile()">Envoyer la sauvegarde chiffrée</button><button class="b" onclick="rappelICS()">Rappel quotidien à 18 h 30 (agenda)</button><button class="b" onclick="bk()">Copier la sauvegarde (texte)</button><label>Importer un fichier</label><input type="file" onchange="impFile(this)"><label>Restaurer</label><textarea id="rs" placeholder="Collez ici une sauvegarde"></textarea><button class="b" onclick="rest()">Restaurer</button></div>'+ouvCard()+diagCard()+secCard()+cloudCard()+appCard()+(ok('usr')?usrCard()+resetCard()+demoCard():'')+auCard();
-  return h;
-}
-function addAcc(){var n=$('an').value.trim();if(!n)return toast('Entrez un nom');S.acc.push({id:uid(),nom:n,cur:$('ad').value});save();toast('Compte ajouté');R()}
-function pay(id){
-  var v=S.v.find(function(x){return x.id===id}),a=acc($('dc_'+id).value),m=num('da_'+id),d=due(v);
-  if(!(m>0))return toast('Montant invalide');
-  if(m*(a.cur==='USD'?S.taux:1)>d-1)m=tc(d,a.cur);
-  post('enc',a.id,m,v.id,'Tranche '+v.client);aud('Encaissement créance',v.client+' '+fa(m,a.cur));save();toast('Tranche enregistrée');R();
+function vMore(){
+  return appCard()+secCard()+cloudCard()+restoreFileCard()+'<div class="card"><h2>Sauvegarde locale</h2><p class="mut">Copiez vos données ou téléchargez un rappel pour votre agenda.</p><button class="b" onclick="bk()">Copier la sauvegarde</button><button class="b" onclick="rappelICS()">Télécharger le rappel d\u2019agenda (18 h 30)</button></div>'+auCard()+'<div class="card"><h2>Sécurité</h2><button class="b" onclick="lock()">Verrouiller l\u2019application</button><button class="b" style="background:var(--red);color:#fff" onclick="wipe()">Effacer les données de cet appareil</button></div>';
 }
 function bk(){
-  var j=JSON.stringify(S),f=function(){ask('Copiez la sauvegarde',[{l:'Sauvegarde (sélectionnez tout et copiez)',v:j}],function(){})};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(j).then(function(){toast('Sauvegarde copiée')},f);else f();
+  if(DEMO)return toast('Indisponible en mode démonstration');
+  var j=JSON.stringify(S);
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(j).then(function(){toast('Sauvegarde copiée dans le presse-papier')},function(){shareFile(j,'espoir-sauvegarde-'+dk()+'.txt')});
+  else shareFile(j,'espoir-sauvegarde-'+dk()+'.txt');
 }
-function rest(){
-  try{var o=JSON.parse($('rs').value);if(!o.p||!o.v||!o.mv||!o.acc)throw 0;
-    yes('Restaurer la sauvegarde','Remplacer toutes les données actuelles ?',function(){S=o;norm();LOADED=true;CORR=0;save();toast('Restauré');R()});
-  }catch(e){toast('Sauvegarde invalide')}
+function wipe(){
+  yes('Effacer les données ?','Toutes les données de cet appareil seront supprimées. Assurez-vous d\u2019avoir une sauvegarde WhatsApp.',function(){
+    ask('Effacer les données',[{l:'Entrez votre PIN pour confirmer',t:'password'}],function(v){
+      if(hp(v[0])!==CU.pin)return toast('PIN incorrect');
+      localStorage.removeItem(KEY);localStorage.removeItem('espoir_lic');localStorage.removeItem('espoir_cloud');localStorage.removeItem('espoir_lk');
+      db('readwrite',function(s){if(s)s.clear()});
+      S=init();norm();CU=null;LOADED=true;CORR=0;save();toast('Données effacées');R();
+    });
+  },'Effacer');
 }
-var TABS=[['home','🏠','Caisse'],['sell','🛒','Vendre'],['stock','📦','Stock'],['ach','🚚','Achats'],['cmd','📋','Commande'],['arg','💱','Argent'],['more','⚙️','Plus'],['lic','🔑','Abonnement']];
-function R(){
-  $('cur').textContent=S.dev;$('ttl').textContent=S.biz?S.biz.nom:'ESPOIR Finance';
-  var dm=$('dm');if(DEMO){dm.style.display='flex';dm.innerHTML='<span>MODE DÉMONSTRATION : rien n\u2019est enregistré</span><span><button onclick="restartDemo()">Recommencer</button> <button onclick="exitDemo()">Quitter</button></span>'}else dm.style.display='none';
-  if(CORR){$('app').innerHTML=vCorr();$('nav').innerHTML='';return}
-  if(!S.biz){$('app').innerHTML=vBiz()+restoreFileCard()+demoEntry()+(SB_URL?'<div class="card"><h2>Déjà un compte ?</h2><p class="mut">Retrouvez vos données avec votre code de récupération.</p><button class="b" onclick="askRestore()">Restaurer mes données</button></div>':'');$('nav').innerHTML='';bizType(1);return}
-  if(!S.us.length){$('app').innerHTML=vPin0();$('nav').innerHTML='';return}
-  if(!CU){$('app').innerHTML=vLock();$('nav').innerHTML='';return}
-  var AL=allowed();if(AL.indexOf(tab)<0&&!((tab==='biz'||tab==='lic')&&ok('biz'))&&!(tab==='rap'&&ok('adm'))&&!(tab==='stk'&&ok('stk')&&lst().s!=='expire')&&!(tab==='ouv'&&ok('adm'))&&!(tab==='cli'&&lst().s!=='expire'&&TR[CU.role].indexOf('cmd')>=0))tab=AL[0];
-  if(tab==='biz'){$('app').innerHTML=vBiz();$('nav').innerHTML=navH();bizType(1);return}
-  $('app').innerHTML={home:vHome,sell:vSell,stock:vStock,arg:vArgent,ach:vAchats,cmd:vCmd,more:vPlus,lic:vLic,rap:vRap,stk:vStk,ouv:vOuv,cli:vCli}[tab]();
-  $('nav').innerHTML=navH();
-  if(tab==='sell'&&cart.length)pre();
-  if(tab==='arg'){tog();clUp()}
-  if(tab==='ach')fillCost();
-  if(tab==='ach'&&pc.length)preA();
-  if(tab==='sell'&&S.p.length)fillPrice();
-  if(tab==='cmd'&&oc.length)preO();
-  roleFilter();
-}
-if(window.addEventListener)window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();DP=e});
-if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(function(){});
-if(document.addEventListener){document.addEventListener('click',bump,true);document.addEventListener('keydown',bump,true);document.addEventListener('input',function(e){var t=e.target;if(!t||t.type!=='number')return;var v=parseFloat(t.value),n=t.nextElementSibling,big=v>=1000;if(n&&n.className==='fmh'){if(big)n.textContent=v.toLocaleString('fr-FR');else n.parentNode.removeChild(n)}else if(big){var d=document.createElement('div');d.className='fmh';d.textContent=v.toLocaleString('fr-FR');t.parentNode.insertBefore(d,t.nextSibling)}},true);document.addEventListener('visibilitychange',function(){if(document.hidden)backupNow(true)})}
+function askDemo(){DEMO=true;CU={id:'demo',nom:'Démonstration',role:'prop'};S=init();norm();S.biz={nom:'Activité Démo',type:'Boutique',resp:'Gestionnaire',tel:'0810000000',adr:'Kinshasa',mode:'nego',max:10};S.ouv=Date.now();LOADED=true;R();toast('Mode démonstration activé')}
+
 start();
 </script>
+</body>
+</html>
