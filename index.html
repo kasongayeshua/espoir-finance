@@ -33,16 +33,16 @@ nav span{display:block;font-size:16px}
 <body>
 <header>
   <b id="ttl">ESPOIR Finance</b>
-  <span><button onclick="lock()">🔒</button> <button id="cur" onclick="swap()">FC</button></span>
+  <span><button onclick="localStorage.clear();location.reload()">🔄 Réinit</button> <button id="cur" onclick="swap()">FC</button></span>
 </header>
-<main id="app">Chargement...</main>
+<main id="app"></main>
 <nav id="nav">
   <button class="on" onclick="go('home')"><span>🏠</span>Accueil</button>
-  <button onclick="go('sell')"><span>🛒</span>Vendre</button>
+  <button onclick="go('sell')"><span>🛒</span>Vente</button>
   <button onclick="go('stock')"><span>📦</span>Stock</button>
   <button onclick="go('ach')"><span>📥</span>Achats</button>
-  <button onclick="go('cmd')"><span>📋</span>Cmd</button>
-  <button onclick="go('arg')"><span>💵</span>Caisse</button>
+  <button onclick="go('cmd')"><span>📋</span>Commandes</button>
+  <button onclick="go('arg')"><span>💵</span>Argent</button>
   <button onclick="go('more')"><span>⚙️</span>Plus</button>
 </nav>
 <script>
@@ -82,11 +82,6 @@ function swap() {
   render();
 }
 
-function lock() {
-  CU = null;
-  render();
-}
-
 function go(t) {
   tab = t;
   render();
@@ -111,11 +106,6 @@ function render() {
       else btn.classList.remove('on');
     });
 
-    if (!CU) {
-      app.innerHTML = '<div class="card"><h2>Connexion</h2><button class="b" onclick="CU={id:\'u1\',nom:\'Propriétaire\',role:\'prop\'};render();">Ouvrir l\'application</button></div>';
-      return;
-    }
-
     if (tab === 'home') {
       app.innerHTML = '<div class="card">' +
         '<h2>Tableau de bord</h2>' +
@@ -138,17 +128,17 @@ function render() {
         '<button class="b" onclick="var n=prompt(\'Nom :\');var v=prompt(\'Prix :\');if(n){S.p.push({id:Date.now(),nom:n,vente:Number(v)||100,qte:1});saveData();render();}">+ Ajouter un produit</button>' +
         '</div>';
     } else if (tab === 'ach') {
-      app.innerHTML = '<div class="card"><h2>Achats & Fournisseurs</h2><p class="mut">Module d’approvisionnement.</p></div>';
+      app.innerHTML = '<div class="card"><h2>Achats</h2><p class="mut">Module d’approvisionnement et fournisseurs.</p></div>';
     } else if (tab === 'cmd') {
-      app.innerHTML = '<div class="card"><h2>Commandes clients</h2><p class="mut">Suivi des commandes.</p></div>';
+      app.innerHTML = '<div class="card"><h2>Commandes</h2><p class="mut">Suivi des commandes clients.</p></div>';
     } else if (tab === 'arg') {
-      app.innerHTML = '<div class="card"><h2>Caisse et comptes</h2><p class="mut">Comptes actifs : ' + S.acc.length + '</p></div>';
+      app.innerHTML = '<div class="card"><h2>Argent & Caisse</h2><p class="mut">Comptes de trésorerie actifs : ' + S.acc.length + '</p></div>';
     } else if (tab === 'more') {
       app.innerHTML = '<div class="card">' +
-        '<h2>Paramètres</h2>' +
+        '<h2>Plus / Paramètres</h2>' +
         '<label>Nom de l\'établissement</label>' +
         '<input id="m_nom" value="' + (S.biz.nom || '') + '">' +
-        '<button class="b" onclick="S.biz.nom=document.getElementById(\'m_nom\'].value;saveData();render();alert(\'Enregistré\');">Enregistrer</button>' +
+        '<button class="b" onclick="S.biz.nom=document.getElementById(\'m_nom\').value;saveData();render();alert(\'Enregistré\');">Enregistrer</button>' +
         '</div>';
     }
   } catch(err) {
