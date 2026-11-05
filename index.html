@@ -47,7 +47,7 @@ function init(){
   return {
     taux:2265, dev:'FC',
     acc:[{id:'a1', nom:'Caisse principale', cur:'FC'}, {id:'a2', nom:'Caisse USD', cur:'USD'}],
-    p:[{id:'p1', nom:'Exemple Produit', cout:1000, vente:1500, qte:10, seuil:2, svc:false, u:'pièce'}],
+    p:[{id:'p1', nom:'Article standard', cout:1000, vente:1500, qte:20, seuil:2, svc:false, u:'pièce'}],
     v:[], mv:[], biz:{nom:'ESPOIR Finance', type:'Boutique', resp:'', tel:''},
     us:[{id:'u1', nom:'Propriétaire', role:'prop'}], au:[], cl:[], od:[], cs:[], fr:[], ac:[], sm:[]
   };
@@ -114,26 +114,31 @@ function render(){
     document.getElementById('cur').textContent = S.dev;
 
     if(!CU){
-      app.innerHTML = '<div class="card"><h2>Connexion</h2><button class="b" onclick="CU={id:\'u1\',nom:\'Propriétaire\',role:\'prop\'};render();">Ouvrir l\'application</button></div>';
+      app.innerHTML = '<div class="card"><h2>Connexion</h2><button class="b" onclick="CU={id:\'u1\',nom:\'Propriétaire\',role:\'prop\'};render();">Ouvrir</button></div>';
       document.getElementById('nav').innerHTML = '';
       return;
     }
 
     if(tab === 'home'){
-      app.innerHTML = '<div class="card"><h2>Tableau de bord</h2><div class="big">Actif</div><p class="mut">Application opérationnelle.</p><button class="b" onclick="go(\'sell\')">🛒 Démarrer une vente</button></div>' +
-                      '<div class="card"><h2>Résumé</h2><p class="mut">Produits en stock : <b>' + S.p.length + '</b></p></div>';
+      var totStock = 0; S.p.forEach(function(p){ totStock += p.qte * p.vente; });
+      app.innerHTML = '<div class="card"><h2>Tableau de bord</h2><div class="big">Actif</div><p class="mut">Gestion en cours.</p><button class="b" onclick="go(\'sell\')">🛒 Démarrer une vente</button></div>' +
+                      '<div class="card"><h2>Résumé</h2><p class="mut">Produits en stock : <b>' + S.p.length + '</b><br>Valeur estimée : <b>' + fmt(totStock) + '</b></p></div>';
     } else if(tab === 'sell'){
-      app.innerHTML = '<div class="card"><h2>Nouvelle Vente</h2><label>Produit</label><select>' + S.p.map(function(p){ return '<option>' + p.nom + ' (' + fmt(p.vente) + ')</option>'; }).join('') + '</select><button class="b" onclick="alert(\'Vente enregistrée\')">Valider</button></div>';
+      app.innerHTML = '<div class="card"><h2>Nouvelle Vente</h2><label>Sélectionner un produit</label><select id="sel_p">' + S.p.map(function(p){ return '<option value="'+p.id+'">' + p.nom + ' (' + fmt(p.vente) + ' - Stock: ' + p.qte + ')</option>'; }).join('') + '</select>' +
+                      '<label>Quantité</label><input id="q_p" type="number" value="1">' +
+                      '<button class="b" onclick="var id=document.getElementById(\'sel_p\').value;var qt=Number(document.getElementById(\'q_p\').value)||1;var pr=S.p.find(function(x){return x.id===id;});if(pr){S.v.push({id:Date.now(),total:pr.vente*qt,items:[{nom:pr.nom,qte:qt,prix:pr.vente,cout:pr.cout}]});pr.qte-=qt;saveData();alert(\'Vente enregistrée avec succès !\');render();}">Valider la vente</button></div>';
     } else if(tab === 'stock'){
-      app.innerHTML = '<div class="card"><h2>Gestion du Stock (' + S.p.length + ')</h2>' + S.p.map(function(p){ return '<div class="row"><b>' + p.nom + '</b><span>' + p.qte + ' pces</span></div>'; }).join('') + '<button class="b" onclick="var n=prompt(\'Nom :\');if(n){S.p.push({id:Date.now(),nom:n,vente:1500,qte:5});saveData();render();}">+ Ajouter</button></div>';
+      app.innerHTML = '<div class="card"><h2>Gestion du Stock (' + S.p.length + ')</h2>' + 
+                      S.p.map(function(p){ return '<div class="row"><b>' + p.nom + '</b><span><b>' + p.qte + '</b> pces | ' + fmt(p.vente) + '</span></div>'; }).join('') + 
+                      '<button class="b" onclick="var n=prompt(\'Nom du produit :\');var v=Number(prompt(\'Prix de vente :\'))||1500;var q=Number(prompt(\'Quantité initiale :\'))||10;if(n){S.p.push({id:String(Date.now()),nom:n,cout:v*0.7,vente:v,qte:q,seuil:2,svc:false});saveData();render();}">+ Ajouter un produit</button></div>';
     } else if(tab === 'ach'){
-      app.innerHTML = '<div class="card"><h2>Achats & Fournisseurs</h2><p class="mut">Module d’approvisionnement.</p></div>';
+      app.innerHTML = '<div class="card"><h2>Achats & Fournisseurs</h2><p class="mut">Module d’approvisionnement et suivi des créances fournisseurs.</p></div>';
     } else if(tab === 'cmd'){
-      app.innerHTML = '<div class="card"><h2>Commandes clients</h2><p class="mut">Suivi des commandes.</p></div>';
+      app.innerHTML = '<div class="card"><h2>Commandes clients</h2><p class="mut">Suivi des commandes en cours et acomptes.</p></div>';
     } else if(tab === 'arg'){
-      app.innerHTML = '<div class="card"><h2>Argent & Caisse</h2><p class="mut">Comptes de trésorerie actifs.</p></div>';
+      app.innerHTML = '<div class="card"><h2>Argent & Caisse</h2><p class="mut">Trésorerie et comptes de l’établissement.</p>' + S.acc.map(function(a){ return '<div class="row"><b>'+a.nom+'</b><span>'+a.cur+'</span></div>'; }).join('') + '</div>';
     } else if(tab === 'more'){
-      app.innerHTML = '<div class="card"><h2>Plus / Paramètres</h2><label>Nom de l’établissement</label><input id="bn" value="' + (S.biz.nom || '') + '"><button class="b" onclick="S.biz.nom=document.getElementById(\'bn\').value;saveData();render();alert(\'Enregistré\');">Enregistrer</button></div>';
+      app.innerHTML = '<div class="card"><h2>Paramètres de l’activité</h2><label>Nom de l’établissement</label><input id="bn" value="' + (S.biz.nom || '') + '"><button class="b" onclick="S.biz.nom=document.getElementById(\'bn\').value;saveData();render();alert(\'Modifications enregistrées\');">Enregistrer</button></div>';
     }
     document.getElementById('nav').innerHTML = navH();
   } catch(err){
