@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#12355b">
@@ -31,7 +29,7 @@ button.b{width:100%;margin-top:12px;padding:13px;border:0;border-radius:10px;bac
 button.s{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:6px 10px;font-size:14px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
 .row:last-child{border:0}
-.al{border-left:5px solid var(--acc);background:var(--card);padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid var(--line);border-left:5px solid var(--acc)}
+.al{border-left:5px solid var(--acc);background:var(--card);padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid var(--line)}
 .al.r{border-left-color:var(--red)}
 .neg{color:var(--red)}.pos{color:var(--ok)}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
@@ -39,7 +37,6 @@ nav button{flex:1;border:0;background:none;padding:10px 0;color:var(--mut);font-
 nav button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--acc)}
 nav span{display:block;font-size:18px}
 #t{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:20px;font-size:14px;display:none;z-index:9;max-width:90%}
-.fmh{font-size:13px;color:var(--ok);font-weight:700;margin-top:2px}
 details summary{cursor:pointer;font-weight:700}
 #dm{display:none;flex-basis:100%;gap:8px;align-items:center;justify-content:space-between;background:#f5b800;color:#14213d;margin:10px -16px -12px;padding:8px 16px;font-size:13px;font-weight:700}
 #dm button{background:#14213d;color:#fff;border:0;border-radius:14px;padding:5px 10px;font-weight:700}
@@ -273,7 +270,7 @@ function addP(){
 }
 function reap(id){
   var p=S.p.find(function(x){return x.id===id}),two=p.ua&&p.f>1,px=isPX()||p.exp,k=two?p.f:1;
-  var F=[{l:two?'Nombre de '+p.ua+' reçus':'Quantité reçue',t:'number'},{l:'Coût par '+(two?p.ua:'unité')+' ('+S.dev+')',t:'number',v:dp(p.cout*k)}];
+  var F=[{l:two?'Nombre de '+p.ua+' reçus':'Quantité reçue',t:'number'},{l:p.ua?'Coût par '+p.ua:'Coût par unité'+' ('+S.dev+')',t:'number',v:dp(p.cout*k)}];
   if(px)F.push({l:'Date de péremption (facultatif)',t:'date'});
   ask('Entrée de stock : '+p.nom,F,function(v){
     var q=nf(v[0]),c=nf(v[1]);if(!(q>0)||!(c>=0))return toast('Quantité ou coût invalide');
@@ -808,7 +805,7 @@ function rappelICS(){
   toast('Ouvrez le fichier pour ajouter le rappel de 20 h 00 à votre agenda');
 }
 function vCorr(){return'<div class="al r"><b>Les données de cet appareil n’ont pas pu être lues.</b> Elles n’ont pas été effacées : une copie est conservée.</div><div class="card"><h2>Récupérer mes données</h2><label>Importer un fichier de sauvegarde</label><input type="file" onchange="impFile(this)">'+(SB_URL?'<button class="b" onclick="askRestore(1)">Restaurer depuis le serveur</button>':'')+'<button class="b" style="background:var(--red);color:#fff" onclick="repartir()">Repartir de zéro</button></div>'}
-function repartir(){yes('Repartir de zéro','L’application sera vide. La copie illisible reste conservée sur cet appareil.',function(){S=init();norm();LOADED=true;CORR=0;save();R()},'Repartir de zéro')}
+function repartir(){yes('Repartir de zéro','L’application sera vide. La copie illisible reste conservée sur cet appareil.',function(){S=init();norm();CU=null;LOADED=true;CORR=0;save();R()},'Repartir de zéro')}
 function diagCard(){
   if(!ok('adm'))return'';
   var sa=window.matchMedia&&matchMedia('(display-mode: standalone)').matches;
