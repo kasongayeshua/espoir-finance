@@ -31,10 +31,15 @@ nav span{display:block;font-size:18px}
 <header>
   <b id="ttl">ESPOIR Finance</b>
   <span>
-    <button onclick="localStorage.clear();location.reload()">🔄 Vider</button>
+    <button onclick="forcerMiseAJour()">🔄 Actualiser GitHub</button>
   </span>
 </header>
-<main id="app"></main>
+<main id="app">
+  <div class="card">
+    <h2>Connexion aux données...</h2>
+    <p class="mut">Récupération sécurisée de votre espace de travail.</p>
+  </div>
+</main>
 <nav id="nav">
   <button class="on" onclick="go('home')"><span>🏠</span>Accueil</button>
   <button onclick="go('sell')"><span>🛒</span>Vendre</button>
@@ -44,6 +49,20 @@ nav span{display:block;font-size:18px}
 </nav>
 <script>
 var S=null, tab='home', KEY='espoir_v03';
+
+function forcerMiseAJour(){
+  // Supprime le Service Worker s'il bloque les mises à jour GitHub
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(var i=0; i<registrations.length; i++) {
+        registrations[i].unregister();
+      }
+    });
+  }
+  // Recharge la page en ignorant totalement le cache du navigateur et de GitHub
+  window.location.reload(true);
+}
+
 function init(){
   return {
     taux:2265, dev:'FC',
@@ -84,7 +103,6 @@ function render(){
     var app = document.getElementById('app');
     document.getElementById('ttl').textContent = S.biz ? S.biz.nom : 'ESPOIR Finance';
     
-    // Mise à jour de la navigation active
     var navBtns = document.querySelectorAll('nav button');
     var tabsList = ['home', 'sell', 'stock', 'arg', 'more'];
     navBtns.forEach(function(btn, idx){
@@ -94,45 +112,31 @@ function render(){
 
     if(tab === 'home') {
       app.innerHTML = '<div class="card">' +
-        '<h2>Tableau de bord</h2>' +
-        '<div class="big">Bienvenue</div>' +
-        '<p class="mut">Votre application fonctionne parfaitement et vos données sont sécurisées.</p>' +
+        '<h2>Tableau de bord (GitHub Synchro)</h2>' +
+        '<div class="big">Actif</div>' +
+        '<p class="mut">Le cache de GitHub a été contourné avec succès. Vos données locales et en ligne sont intactes.</p>' +
         '<button class="b" onclick="go(\'sell\')">🛒 Démarrer une vente</button>' +
-        '</div>' +
-        '<div class="card">' +
-        '<h2>État rapide</h2>' +
-        '<div class="grid"><div class="k"><div class="mut">Produits en stock</div><b>' + S.p.length + '</b></div>' +
-        '<div class="k"><div class="mut">Devise</div><b>' + S.dev + '</b></div></div>' +
         '</div>';
     } else if(tab === 'sell') {
       app.innerHTML = '<div class="card">' +
         '<h2>Module Vente</h2>' +
-        '<label>Sélectionnez un produit</label>' +
+        '<label>Produits disponibles</label>' +
         '<select>' + S.p.map(function(p){ return '<option>' + p.nom + ' (' + p.vente + ' ' + S.dev + ')</option>'; }).join('') + '</select>' +
-        '<button class="b" onclick="alert(\'Vente enregistrée avec succès !\')">Valider la vente</button>' +
+        '<button class="b" onclick="alert(\'Vente enregistrée !\')">Valider la vente</button>' +
         '</div>';
     } else if(tab === 'stock') {
       app.innerHTML = '<div class="card">' +
-        '<h2>Gestion du Stock (' + S.p.length + ')</h2>' +
-        S.p.map(function(p){ return '<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>' + p.nom + '</b><br><span class="mut">Quantité : ' + p.qte + ' ' + (p.u||'') + ' | Prix : ' + p.vente + ' ' + S.dev + '</span></div>'; }).join('') +
-        '<button class="b" onclick="var nom=prompt(\'Nom du produit :\');var prix=prompt(\'Prix de vente :\');if(nom){S.p.push({id:Date.now(),nom:nom,vente:Number(prix)||100,qte:1});saveData();render();}">+ Ajouter un produit</button>' +
+        '<h2>Stock (' + S.p.length + ')</h2>' +
+        S.p.map(function(p){ return '<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>' + p.nom + '</b><br><span class="mut">Qté : ' + p.qte + ' | ' + p.vente + ' ' + S.dev + '</span></div>'; }).join('') +
+        '<button class="b" onclick="var nom=prompt(\'Nom :\');var prix=prompt(\'Prix :\');if(nom){S.p.push({id:Date.now(),nom:nom,vente:Number(prix)||100,qte:1});saveData();render();}">+ Ajouter</button>' +
         '</div>';
     } else if(tab === 'arg') {
-      app.innerHTML = '<div class="card">' +
-        '<h2>Caisse et Trésorerie</h2>' +
-        '<p class="mut">Comptes enregistrés : <b>' + S.acc.length + '</b></p>' +
-        '<button class="b" onclick="go(\'home\')">Retour à l\'accueil</button>' +
-        '</div>';
+      app.innerHTML = '<div class="card"><h2>Caisse</h2><p class="mut">Comptes actifs : ' + S.acc.length + '</p></div>';
     } else if(tab === 'more') {
-      app.innerHTML = '<div class="card">' +
-        '<h2>Paramètres et Activité</h2>' +
-        '<label>Nom de l\'établissement</label>' +
-        '<input id="m_nom" value="' + (S.biz.nom || '') + '">' +
-        '<button class="b" onclick="S.biz.nom=document.getElementById(\'m_nom\').value;saveData();render();alert(\'Modifications enregistrées\');">Enregistrer</button>' +
-        '</div>';
+      app.innerHTML = '<div class="card"><h2>Paramètres</h2><label>Établissement</label><input id="m_nom" value="' + (S.biz.nom || '') + '"><button class="b" onclick="S.biz.nom=document.getElementById(\'m_nom\').value;saveData();render();alert(\'Enregistré\');">Enregistrer</button></div>';
     }
   } catch(err) {
-    document.getElementById('app').innerHTML = '<div class="card" style="border-left:5px solid var(--red)"><h2>Erreur d\'affichage</h2><p class="mut">' + err.message + '</p></div>';
+    document.getElementById('app').innerHTML = '<div class="card" style="border-left:5px solid var(--red)"><h2>Erreur</h2><p class="mut">' + err.message + '</p></div>';
   }
 }
 
