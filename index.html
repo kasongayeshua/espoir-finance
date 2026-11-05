@@ -4,146 +4,311 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#12355b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>ESPOIR Finance</title>
 <style>
 :root{--bg:#f6f4ee;--card:#fff;--ink:#14213d;--mut:#667085;--btn:#12355b;--bi:#fff;--acc:#f5b800;--red:#c8102e;--ok:#1b7f4b;--line:#e3dfd3}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1726;--card:#16233a;--ink:#eef1f6;--mut:#9aa7bd;--btn:#f5b800;--bi:#14213d;--line:#263757}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,sans-serif;padding-bottom:84px}
-header{background:var(--btn);color:var(--bi);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
-header button{background:transparent;color:var(--bi);border:1.5px solid var(--bi);border-radius:16px;padding:4px 10px;font-weight:700;font-size:12px}
-main{max-width:620px;margin:0 auto;padding:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-h2{font-size:18px;margin:0 0 10px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:80px}
+header{flex-wrap:wrap;background:var(--btn);color:var(--bi);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header b{font-size:17px}
+header button{background:transparent;color:var(--bi);border:1.2px solid var(--bi);border-radius:16px;padding:4px 10px;font-weight:700;font-size:13px}
+main{max-width:620px;margin:0 auto;padding:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+h2{font-size:17px;margin:0 0 8px}
 .big{font-size:26px;font-weight:800;margin:2px 0}
-.mut{color:var(--mut);font-size:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.k{border-left:5px solid var(--acc);padding-left:10px}
-label{display:block;font-size:14px;color:var(--mut);margin:8px 0 3px}
-input,select{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:8px;font-size:16px;background:var(--bg);color:var(--ink)}
-button.b{width:100%;margin-top:12px;padding:13px;border:0;border-radius:10px;background:var(--btn);color:var(--bi);font-size:16px;font-weight:700}
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex}
-nav button{flex:1;border:0;background:none;padding:10px 0;color:var(--mut);font-size:11px;font-weight:600}
+.mut{color:var(--mut);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.k{border-left:4px solid var(--acc);padding-left:8px}
+label{display:block;font-size:13px;color:var(--mut);margin:6px 0 2px}
+input,select{width:100%;padding:10px;border:1.2px solid var(--line);border-radius:8px;font-size:15px;background:var(--bg);color:var(--ink)}
+button.b{width:100%;margin-top:10px;padding:12px;border:0;border-radius:8px;background:var(--btn);color:var(--bi);font-size:15px;font-weight:700}
+button.s{border:1.2px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;padding:5px 8px;font-size:13px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.al{border-left:4px solid var(--acc);background:var(--card);padding:9px 10px;margin-bottom:8px;border-radius:6px;border:1px solid var(--line)}
+.al.r{border-left-color:var(--red)}
+.neg{color:var(--red)}.pos{color:var(--ok)}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:8px 0;color:var(--mut);font-size:10px;font-weight:600}
 nav button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--acc)}
-nav span{display:block;font-size:18px}
+nav span{display:block;font-size:16px}
+#t{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:16px;font-size:13px;display:none;z-index:9;max-width:90%}
+#md{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;align-items:flex-end;justify-content:center}
+.mb{background:var(--card);width:100%;max-width:620px;border-radius:14px 14px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<header>
-  <b id="ttl">ESPOIR Finance</b>
-  <span>
-    <button onclick="forcerMiseAJour()">🔄 Actualiser GitHub</button>
-  </span>
-</header>
-<main id="app">
-  <div class="card">
-    <h2>Connexion aux données...</h2>
-    <p class="mut">Récupération sécurisée de votre espace de travail.</p>
-  </div>
-</main>
-<nav id="nav">
-  <button class="on" onclick="go('home')"><span>🏠</span>Accueil</button>
-  <button onclick="go('sell')"><span>🛒</span>Vendre</button>
-  <button onclick="go('stock')"><span>📦</span>Stock</button>
-  <button onclick="go('arg')"><span>💵</span>Caisse</button>
-  <button onclick="go('more')"><span>⚙️</span>Plus</button>
-</nav>
+<header><b id="ttl">ESPOIR Finance</b><span><button onclick="lock()">🔒</button> <button id="cur" onclick="swap()">FC</button></span></header>
+<main id="app"></main>
+<div id="t"></div>
+<div id="md"></div>
+<nav id="nav"></nav>
 <script>
-var S=null, tab='home', KEY='espoir_v03';
+var DEMO=false,REAL=null,DP=null,CU=null,LK={n:0,t:0},idle,MD=null,S,tab='home',cart=[],D=864e5,KEY='espoir_v03',LOADED=false;
+function init(){return{taux:2265,dev:'FC',acc:[{id:'a1',nom:'Caisse',cur:'FC'},{id:'a2',nom:'Caisse',cur:'USD'},{id:'a3',nom:'Mobile Money',cur:'FC'}],p:[],v:[],mv:[],biz:null,fr:[],ac:[],sm:[],us:[],au:[],cl:[],od:[],cs:[]}}
+function norm(){try{S.cs=S.cs||[];S.od=S.od||[];S.us=S.us||[];S.au=S.au||[];S.cl=S.cl||[];S.fr=S.fr||[];S.ac=S.ac||[];S.sm=S.sm||[]}catch(e){}}
+function db(m,f){try{var r=indexedDB.open(KEY,1);r.onupgradeneeded=function(){r.result.createObjectStore('k')};r.onsuccess=function(){f(r.result.transaction('k',m).objectStore('k'))};r.onerror=function(){f(null)}}catch(e){f(null)}}
+function save(){if(DEMO||!LOADED)return;try{S._t=Date.now();var j=JSON.stringify(S);db('readwrite',function(s){if(s)s.put(j,'s')});localStorage.setItem(KEY,j)}catch(e){}}
+function pj(t){try{var o=JSON.parse(t);return o&&o.mv&&o.p?o:null}catch(e){return null}}
+function dk(t){var d=new Date(t||Date.now());return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function cn(o){return(o.p?o.p.length:0)+(o.v?o.v.length:0)+(o.mv?o.mv.length:0)}
+function fin(a,b){
+  try{
+    var A=pj(a),B=pj(b),o=A&&B?((B._t||0)>(A._t||0)?B:A):(A||B);
+    S=o||init();norm();LOADED=true;R();
+  }catch(e){
+    S=init();norm();LOADED=true;R();
+  }
+}
+function start(){var ls=localStorage.getItem(KEY);db('readonly',function(s){if(!s)return fin(null,ls);var g=s.get('s');g.onsuccess=function(){fin(g.result||null,ls)};g.onerror=function(){fin(null,ls)}})}
+function $(i){return document.getElementById(i)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function isToday(t){return new Date(t).toDateString()===new Date().toDateString()}
+function fa(m,c){return c==='USD'?(m<0?'-':'')+'$'+Math.abs(m).toLocaleString('fr-FR',{maximumFractionDigits:2}):Math.round(m).toLocaleString('fr-FR')+' FC'}
+function fmt(n){return S.dev==='USD'?fa(n/S.taux,'USD'):fa(n,'FC')}
+function toFC(x){return S.dev==='USD'?x*S.taux:x}
+function dp(n){return S.dev==='USD'?Math.round(n/S.taux*100)/100:Math.round(n)}
+function tc(n,c){return c==='USD'?Math.round(n/S.taux*100)/100:Math.round(n)}
+function num(id){return parseFloat(String($(id).value||'').replace(',','.'))}
+function toast(m){var t=$('t');if(!t)return;t.textContent=m;t.style.display='block';setTimeout(function(){t.style.display='none'},2400)}
+function swap(){S.dev=S.dev==='FC'?'USD':'FC';save();R()}
+function go(t){tab=t;R();window.scrollTo(0,0)}
+function acc(id){return S.acc.find(function(a){return a.id===id})}
+function lab(a){return a.nom+' ('+a.cur+')'}
+function fc(e){return e.cur==='USD'?e.m*e.taux:e.m}
+function bal(a){return S.mv.reduce(function(s,e){return e.acc===a.id?s+e.m:s},0)}
+function kind(e){return e.type==='annul'?e.of:e.type}
+function post(type,a,m,ref,note){S.mv.push({u:CU?CU.nom:'',id:uid(),t:Date.now(),type:type,acc:a,cur:acc(a).cur,m:m,taux:S.taux,ref:ref||'',note:note||''})}
+function paid(v){return S.mv.reduce(function(s,e){return((e.ref===v.id&&kind(e)==='enc')||(v.ord&&e.ref===v.ord&&kind(e)==='aco'))?s+fc(e):s},0)}
+function due(v){if(v.annul)return 0;var d=v.total-paid(v);return d<dust()?0:d}
+function opts(sel){return S.acc.map(function(a){return'<option value="'+a.id+'"'+(a.id===sel?' selected':'')+'>'+esc(lab(a))+'</option>'}).join('')}
+function dust(){return Math.max(1,S.taux*0.011)}
+function cartTot(){return cart.reduce(function(a,i){return a+i.prix*i.qte},0)}
 
-function forcerMiseAJour(){
-  // Supprime le Service Worker s'il bloque les mises à jour GitHub
-  if('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-      for(var i=0; i<registrations.length; i++) {
-        registrations[i].unregister();
+var TYP={'Boutique':'nego','Alimentation':'nego','Vivres frais':'nego','Charcuterie':'fixe','Pâtisserie':'fixe','Terrasse et bar':'fixe','Restaurant':'fixe','Salon de coiffure':'fixe','Dépôt de boissons':'nego','Dépôt de jus':'nego','Dépôt de ciment':'nego','Quincaillerie':'nego','Pharmacie':'fixe','Habillement':'nego','Hôtel':'fixe','Briqueterie':'nego','Autre':'nego'};
+var PX=['Pharmacie','Alimentation','Vivres frais','Charcuterie','Pâtisserie','Dépôt de boissons','Dépôt de jus','Restaurant','Terrasse et bar'];
+var ML={fixe:'Prix fixe',nego:'Prix négociable',libre:'Prix libre'};
+function isPX(){return PX.indexOf((S.biz&&S.biz.type)||'')>=0}
+function setExp(p,ex,old){if(ex&&(!p.exp||old<=0||ex<p.exp))p.exp=ex}
+function pol(p){var b=S.biz||{mode:'nego',max:10},m=p.mode&&p.mode!=='defaut'?p.mode:b.mode,mn=p.min>0?p.min:p.vente*(1-(b.max||0)/100);return{mode:m,min:m==='nego'?mn:m==='libre'?0:p.vente}}
+function hint(p,k){var q=pol(p);k=k||1;return q.mode==='fixe'?'Prix fixe : non modifiable.':q.mode==='libre'?'Prix libre : vous fixez le prix.':'Négociable : minimum '+fmt(q.min*k)+'.'}
+function plab(p){var q=pol(p);return q.mode==='fixe'?'Prix fixe':q.mode==='libre'?'Prix libre':'Négociable'}
+
+function stockCard(){
+  var c=0,v=0,n=0;S.p.forEach(function(p){if(p.svc)return;var q=Math.max(p.qte,0);c+=q*p.cout;v+=q*p.vente;if(q>0)n++});
+  return'<div class="card"><h2>Valeur du stock</h2><div class="grid"><div class="k"><div class="mut">Au coût d’achat</div><b>'+fmt(c)+'</b></div><div class="k"><div class="mut">Au prix de vente</div><b>'+fmt(v)+'</b></div></div><p class="mut" style="margin:6px 0 0">Marge potentielle : <b>'+fmt(v-c)+'</b> sur '+n+' produit(s).</p></div>';
+}
+
+function vBiz(){
+  var b=S.biz||{nom:'',type:'Boutique',resp:'',tel:'',adr:'',mode:'nego',max:10},f=!S.biz;
+  return'<div class="card"><h2>'+(f?'Bienvenue sur ESPOIR Finance':'Mon activité')+'</h2>'+
+  '<label>Nom de l’établissement</label><input id="bn" value="'+esc(b.nom)+'"><label>Type d’activité</label><select id="bt" onchange="bizType()">'+Object.keys(TYP).map(function(k){return'<option'+(k===b.type?' selected':'')+'>'+k+'</option>'}).join('')+'</select>'+
+  '<label>Propriétaire / gérant</label><input id="br" value="'+esc(b.resp)+'"><label>Téléphone</label><input id="bph" type="tel" value="'+esc(b.tel)+'"><label>Adresse</label><input id="ba" value="'+esc(b.adr)+'">'+
+  '<label>Politique de prix par défaut</label><select id="bm" onchange="bizType(1)">'+Object.keys(ML).map(function(k){return'<option value="'+k+'"'+(k===b.mode?' selected':'')+'>'+ML[k]+'</option>'}).join('')+'</select>'+
+  '<div id="bxv"><label>Remise maximale (%)</label><input id="bx" type="number" inputmode="decimal" value="'+b.max+'"></div><button class="b" onclick="saveBiz()">'+(f?'Commencer':'Enregistrer')+'</button></div>';
+}
+function bizType(k){if(!k)$('bm').value=TYP[$('bt'].value];$('bxv').style.display=$('bm').value==='nego'?'block':'none'}
+function saveBiz(){
+  var n=$('bn').value.trim();if(!n)return toast('Entrez le nom de l’établissement');
+  S.biz={nom:n,type:$('bt'].value,resp:$('br').value.trim(),tel:$('bph').value.trim(),adr:$('ba').value.trim(),mode:$('bm'].value,max:Math.min(100,Math.max(0,num('bx')||0))};
+  save();toast('Activité enregistrée');tab='home';R();
+}
+function bizCard(){var b=S.biz;return'<div class="card"><h2>Mon activité</h2><b>'+esc(b.nom)+'</b><div class="mut">'+esc(b.type)+(b.resp?' • '+esc(b.resp):'')+'<br>Prix : '+ML[b.mode]+'</div><button class="b" onclick="go(\'biz\')">Modifier l’activité</button></div>'}
+
+function alertes(){
+  var a=[],now=Date.now();
+  S.p.forEach(function(p){
+    if(p.svc)return;
+    if(p.qte<0)a.push(['Stock négatif : '+esc(p.nom)+' ('+p.qte+').',1]);
+    else if(p.qte===0)a.push(['Rupture : '+esc(p.nom)+' est épuisé.',1]);
+    else if(p.qte<=p.seuil)a.push(['Stock bas : '+esc(p.nom)+' ('+p.qte+' restants).',0]);
+  });
+  return a;
+}
+
+function vHome(){
+  var ca=0,mg=0,enc=0,dep=0,cr=0,tre=0,pe=0,df=0,rows='';
+  S.v.forEach(function(v){if(v.annul)return;if(isToday(v.t)&&!v.ouv){ca+=v.total;v.items.forEach(function(i){mg+=(i.prix-i.cout)*i.qte})}cr+=due(v)});
+  S.mv.forEach(function(e){if(!isToday(e.t))return;var k=kind(e);if(k==='enc'||k==='aco')enc+=fc(e);if(k==='dep')dep-=fc(e)});
+  S.ac.forEach(function(a){df+=dueA(a)});
+  S.acc.forEach(function(a){var b=bal(a);tre+=b*(a.cur==='USD'?S.taux:1);rows+='<div class="row"><span>'+esc(lab(a))+'</span><b class="'+(b<0?'neg':'')+'">'+fa(b,a.cur)+'</b></div>'});
+  
+  var big=function(t,v,c,g,x){return'<div class="card" style="margin-bottom:8px" onclick="go(\''+g+'\')"><div class="mut">'+t+'</div><div class="big '+c+'">'+v+'</div>'+(x||'')+'</div>'};
+  var h=licBanner()+big('Argent que j’ai',fmt(tre),tre<0?'neg':'','arg','<details onclick="event.stopPropagation()"><summary class="mut">Détail par compte</summary>'+rows+'</details>')+big('On me doit',fmt(cr),'','cli')+big('Je dois (fournisseurs)',fmt(df),'','ach')+'<button class="b" style="font-size:18px;padding:15px;margin:0 0 10px" onclick="go(\'sell\')">🛒 Vendre</button>';
+  
+  var al=alertes();
+  if(al.length){h+='<h2>Alertes</h2>';al.slice(0,3).forEach(function(x){h+='<div class="al'+(x[1]?' r':'')+'">'+x[0]+'</div>'})}
+  h+='<details class="card"><summary>Voir la journée</summary><div class="grid" style="margin-top:8px"><div class="k"><div class="mut">Ventes du jour</div><b>'+fmt(ca)+'</b></div><div class="k"><div class="mut">Argent reçu</div><b>'+fmt(enc)+'</b></div><div class="k"><div class="mut">Dépenses</div><b>'+fmt(dep)+'</b></div><div class="k"><div class="mut">Gain ventes</div><b>'+fmt(mg)+'</b></div></div></details>'+stockCard();
+  return h;
+}
+
+var PM='full',SQ='',SP='',SAC='',SEL='background:var(--btn);color:var(--bi);border-color:var(--btn)';
+function freq(){var c={};S.v.forEach(function(v){if(v.annul||v.ouv)return;v.items.forEach(function(i){c[i.pid]=(c[i.pid]||0)+i.qte})});return S.p.filter(function(p){return c[p.id]}).sort(function(a,b){return c[b.id]-c[a.id]}).slice(0,6)}
+function selP(){var q=SQ.toLowerCase();return S.p.find(function(p){return p.id===SP&&(!q||p.nom.toLowerCase().indexOf(q)>=0)})||S.p.filter(function(p){return!q||p.nom.toLowerCase().indexOf(q)>=0})[0]||S.p[0]}
+function prodOpts(){var q=SQ.toLowerCase(),c=selP();return S.p.filter(function(p){return!q||p.nom.toLowerCase().indexOf(q)>=0}).map(function(p){return'<option value="'+p.id+'"'+(c&&p.id===c.id?' selected':'')+'>'+esc(p.nom)+' – '+fmt(p.vente)+(p.svc?'':' ('+p.qte+')')+'</option>'}).join('')}
+function setSQ(v){SQ=v;SP='';$('sp').innerHTML=prodOpts();fillPrice()}
+function pickP(id){SP=id;SQ='';R()}
+function setPM(m){PM=m;R()}
+
+function vSell(){
+  if(!S.p.length)return'<div class="card"><h2>Vendre</h2><p class="mut">Ajoutez d’abord vos produits dans Stock.</p><button class="b" onclick="go(\'stock\')">Aller au Stock</button></div>';
+  var cur=selP(),tot=cartTot(),fq=freq();
+  var h='<div class="card"><h2>Nouvelle vente</h2>'+(S.p.length>6?'<input id="sqr" type="search" placeholder="Rechercher..." value="'+esc(SQ)+'" oninput="setSQ(this.value)">':'')+(fq.length>1?'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+fq.map(function(p){return'<button class="s" onclick="pickP(\''+p.id+'\')">'+esc(p.nom)+'</button>'}).join('')+'</div>':'')+'<label>Produit</label><select id="sp" onchange="fillPrice()">'+prodOpts()+'</select><div id="suv" style="display:none"><label>Vendre par</label><select id="su" onchange="fillPrice()"></select></div><div class="grid"><div><label>Quantité</label><input id="sq" type="number" inputmode="decimal" value="1"></div><div><label>Prix unit. ('+S.dev+')</label><input id="sx" type="number" inputmode="decimal" value="'+dp(cur.vente)+'"'+(pol(cur).mode==='fixe'?' disabled':'')+'></div></div><div class="mut" id="sh" style="margin-top:4px">'+hint(cur)+'</div><button class="b" onclick="addCart()">Ajouter au panier</button></div>';
+  if(cart.length){
+    var cls=S.cs.map(function(c){return'<option value="'+esc(c.nom)+'">'}).join('');
+    h+='<div class="card"><h2>Panier</h2>'+cart.map(function(i,n){return'<div class="row"><span>'+esc(i.nom)+' × '+(i.ql||i.qte)+'</span><span><b>'+fmt(i.prix*i.qte)+'</b> <button class="s" onclick="cart.splice('+n+',1);R()">✕</button></span></div>'}).join('')+
+    '<div class="row"><b>Total</b><b style="font-size:20px">'+fmt(tot)+'</b></div>'+
+    '<label>Compte d’encaissement</label><select id="ac" onchange="pre()">'+opts(SAC)+'</select>'+
+    '<div style="display:flex;gap:6px;margin-top:8px"><button class="s" style="flex:1;'+(PM==='full'?SEL:'')+'" onclick="setPM(\'full\')">Payé total</button><button class="s" style="flex:1;'+(PM==='part'?SEL:'')+'" onclick="setPM(\'part\')">Partiel / Crédit</button></div>'+
+    '<label id="pl"></label><input id="pay" type="number" inputmode="decimal" oninput="chk()"><div id="rst" style="margin-top:4px"></div>'+
+    '<div id="cli" style="display:'+(PM==='part'?'block':'none')+'"><input id="cl" list="cll" placeholder="Nom du client" style="margin-top:6px"><datalist id="cll">'+cls+'</datalist><input id="ct" type="tel" placeholder="Téléphone" style="margin-top:6px"></div>'+
+    '<button class="b" onclick="valider()">Valider la vente</button></div>';
+  }
+  return h;
+}
+function fillPrice(){
+  var p=S.p.find(function(x){return x.id===$('sp').value});if(!p)return;SP=p.id;
+  var two=!p.svc&&p.ua&&p.f>1,su=$('su'),k=1;
+  $('suv').style.display=two?'block':'none';
+  if(two){var cur=su.value;su.innerHTML='<option value="v">'+esc(p.u||'unité')+'</option><option value="a">'+esc(p.ua)+' (= '+p.f+')</option>';su.value=cur==='a'?'a':'v';k=su.value==='a'?p.f:1}
+  $('sx').value=dp(p.vente*k);$('sx').disabled=pol(p).mode==='fixe';$('sh').textContent=hint(p,k);
+}
+function pre(){var a=acc($('ac').value);SAC=a.id;$('pl').textContent=PM==='full'?'Montant donné ('+a.cur+')':'Montant reçu maintenant ('+a.cur+')';chk()}
+function chk(){
+  var a=acc($('ac').value),tot=cartTot(),x=num('pay'),rate=a.cur==='USD'?S.taux:1,m;
+  if(PM==='full'){
+    if(x>0){var rf=x*rate;m=rf>=tot-dust()?'<b class="pos">Monnaie à rendre : '+fa(Math.round((x-tc(tot,a.cur))*100)/100,a.cur)+'</b>':'<b class="neg">Il manque '+fmt(tot-rf)+'</b>'}
+    else m='<span class="mut">Total : <b>'+fa(tc(tot,a.cur),a.cur)+'</b></span>';
+  }else{m='<span class="mut">Reste (dette) : <b>'+fmt(Math.max(0,tot-(x>0?x*rate:0)))+'</b></span>'}
+  $('rst').innerHTML=m;
+}
+function addCart(){
+  var p=S.p.find(function(x){return x.id===$('sp').value}),q=num('sq'),x=toFC(num('sx'));
+  if(!p||!(q>0))return toast('Quantité invalide');
+  var two=!p.svc&&p.ua&&p.f>1,k=two&&$('su').value==='a'?p.f:1,o=pol(p);
+  if(o.mode==='fixe')x=p.vente*k;
+  if(!(x>0))return toast('Prix invalide');
+  cart.push({pid:p.id,nom:p.nom,qte:q*k,prix:x/k,cat:p.vente,cout:p.cout,ql:k>1?q+' '+p.ua:''});
+  R();
+}
+function valider(){
+  var a=acc($('ac').value),tot=cartTot(),c=($('cl').value||'').trim(),tel=($('ct').value||'').trim(),r,rf;
+  if(PM==='full'){r=tc(tot,a.cur);rf=tot}
+  else{
+    r=num('pay');if(isNaN(r)||r<0)r=0;rf=r*(a.cur==='USD'?S.taux:1);
+    if(!c)return toast('Entrez le nom du client');
+  }
+  var cid=c?ensureClient(c,tel):'';
+  var v={id:uid(),t:Date.now(),items:cart,total:tot,client:c||'Comptoir',cid:cid,taux:S.taux,u:CU?CU.nom:''};
+  cart.forEach(function(i){var p=S.p.find(function(x){return x.id===i.pid});if(p&&!p.svc)p.qte-=i.qte});
+  S.v.push(v);
+  if(r>0)post('enc',a.id,r,v.id,'Vente');
+  save();toast('Vente enregistrée');cart=[];PM='full';go('home');
+}
+
+function vStock(){
+  var h=stockCard()+'<div class="card"><h2>Ajouter un produit</h2><label>Nom</label><input id="pn"><div class="grid"><div><label>Coût d’achat</label><input id="pa" type="number" inputmode="decimal"></div><div><label>Prix vente</label><input id="pv" type="number" inputmode="decimal"></div><div><label>Quantité</label><input id="pq" type="number" inputmode="decimal"></div><div><label>Alerte bas</label><input id="ps" type="number" inputmode="decimal" value="5"></div></div><label style="display:flex;gap:6px;align-items:center;margin-top:6px"><input id="psv" type="checkbox" style="width:auto"> C’est un service</label><button class="b" onclick="addP()">Enregistrer</button></div><h2>Produits ('+S.p.length+')</h2>';
+  S.p.forEach(function(p){
+    h+='<div class="card"><div class="row" style="border:0;padding:0"><b>'+esc(p.nom)+'</b>'+(p.svc?'<span class="mut">Service</span>':'<span><b>'+p.qte+'</b> '+esc(p.u||'')+'</span>')+'</div><div class="mut">Achat '+fmt(p.cout)+' • Vente '+fmt(p.vente)+'</div><div style="display:flex;gap:4px;margin-top:6px"><button class="s" onclick="delP(\''+p.id+'\')">Supprimer</button></div></div>';
+  });
+  return h;
+}
+function addP(){
+  var n=$('pn').value.trim(),a=toFC(num('pa')),v=toFC(num('pv')),q=num('pq')||0,s=num('ps')||0;
+  if(!n||!(v>0))return toast('Nom et prix requis');
+  S.p.push({id:uid(),nom:n,cout:a,vente:v,qte:q,seuil:s,svc:$('psv').checked,u:'pièce',ua:'',f:1,mode:'defaut',min:0});
+  save();toast('Produit ajouté');R();
+}
+function delP(id){
+  S.p=S.p.filter(function(x){return x.id!==id});save();toast('Supprimé');R();
+}
+
+function vAchats(){
+  return'<div class="card"><h2>Achats & Fournisseurs</h2><p class="mut">Module d’approvisionnement et dettes fournisseurs.</p><button class="b" onclick="go(\'home\')">Retour</button></div>';
+}
+function vCmd(){
+  return'<div class="card"><h2>Commandes clients</h2><p class="mut">Suivi des commandes et acomptes.</p><button class="b" onclick="go(\'home\')">Retour</button></div>';
+}
+function vArg(){
+  var tre=0;
+  return'<div class="card"><h2>Caisse et comptes</h2><div class="grid">'+S.acc.map(function(a){var b=bal(a);tre+=b*(a.cur==='USD'?S.taux:1);return'<div class="k"><div class="mut">'+esc(lab(a))+'</div><b>'+fa(b,a.cur)+'</b></div>'}).join('')+'</div></div>'+
+  '<div class="card"><h2>Mouvement</h2><button class="b" onclick="go(\'more\')">Gérer dans Plus</button></div>';
+}
+
+function vCli(){
+  return'<div class="card"><h2>Créances clients</h2><p class="mut">Gestion des dettes clients.</p><button class="b" onclick="go(\'home\')">Retour</button></div>';
+}
+function vRap(){
+  return'<div class="card"><h2>Rapports</h2><p class="mut">Analyses et résultats de gestion.</p><button class="b" onclick="go(\'home\')">Retour</button></div>';
+}
+
+function vMore(){
+  return bizCard()+'<div class="card"><h2>Menu Plus</h2><button class="b" onclick="go(\'cli\')">Créances clients</button><button class="b" onclick="go(\'rap\')">Rapports et résultats</button><button class="b" onclick="exportFile()">Sauvegarder sur WhatsApp</button><button class="b" style="background:var(--red);color:#fff" onclick="lock()">Verrouiller</button></div>';
+}
+
+function exportFile(){
+  var j=JSON.stringify(S);
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([j],{type:'text/plain'}));a.download='espoir-sauvegarde-'+dk()+'.txt';document.body.appendChild(a);a.click();
+  S.lx=new Date().toISOString();save();toast('Fichier de sauvegarde prêt');
+}
+
+function licBanner(){
+  var act=S.v.some(function(v){return isToday(v.t)}),done=S.lx&&isToday(S.lx);
+  if(new Date().getHours()>=20&&act&&!done)return'<div class="al r"><b>Sauvegarde du soir (20h).</b> Envoyez le fichier sur votre WhatsApp.<br><button class="s" style="margin-top:6px" onclick="exportFile()">Envoyer la sauvegarde</button></div>';
+  return'';
+}
+
+var TABS=[['home','Accueil','🏠'],['sell','Vendre','🛒'],['stock','Stock','📦'],['ach','Achats','📥'],['cmd','Cmd','📋'],['arg','Caisse','💵'],['more','Plus','⚙️']];
+
+function navH(){
+  return TABS.map(function(t){return'<button class="'+(t[0]===tab?'on':'')+'" onclick="go(\''+t[0]+'\')"><span>'+t[2]+'</span>'+t[1]+'</button>'}).join('');
+}
+
+function ensureClient(nom,tel){
+  var c=S.cs.find(function(x){return x.nom.toLowerCase()===nom.toLowerCase()});
+  if(!c){c={id:uid(),nom:nom,tel:tel||'',q:'',promis:''};S.cs.push(c)}
+  return c.id;
+}
+
+function R(){
+  try{
+    $('ttl').textContent=S&&S.biz?S.biz.nom:'ESPOIR Finance';
+    $('cur').textContent=S?S.dev:'FC';
+    var A=$('app');
+    if(!LOADED){A.innerHTML='<div class="card mut">Chargement...</div>';return}
+    if(!CU){
+      if(S.us && S.us.length > 0) {
+        A.innerHTML='<div class="card"><h2>Connexion</h2><label>Nom ou PIN</label><input id="lp" type="password" inputmode="numeric"><button class="b" onclick="CU={nom:\'Propriétaire\',role:\'prop\'};save();tab=\'home\';R()">Ouvrir</button></div>';
+      } else {
+        S.us.push({id:uid(),nom:'Propriétaire',role:'prop'});
+        CU=S.us[0];
       }
-    });
-  }
-  // Recharge la page en ignorant totalement le cache du navigateur et de GitHub
-  window.location.reload(true);
-}
-
-function init(){
-  return {
-    taux:2265, dev:'FC',
-    acc:[{id:'a1', nom:'Caisse principale', cur:'FC'}],
-    p:[{id:'p1', nom:'Exemple Produit', cout:1000, vente:1500, qte:10, seuil:2, svc:false, u:'pièce'}],
-    v:[], mv:[], biz:{nom:'ESPOIR Finance', type:'Boutique', resp:'', tel:''},
-    us:[{id:'u1', nom:'Propriétaire', role:'prop'}], au:[], cl:[], od:[], cs:[], fr:[], ac:[], sm:[]
-  };
-}
-
-function loadData(){
-  try {
-    var raw = localStorage.getItem(KEY);
-    if(raw) {
-      S = JSON.parse(raw);
+      $('nav').innerHTML='';
+      return;
     }
-  } catch(e) {}
-  if(!S || !S.biz) {
-    S = init();
-    saveData();
+    if(tab==='home')A.innerHTML=vHome();
+    else if(tab==='sell')A.innerHTML=vSell();
+    else if(tab==='stock')A.innerHTML=vStock();
+    else if(tab==='ach')A.innerHTML=vAchats();
+    else if(tab==='cmd')A.innerHTML=vCmd();
+    else if(tab==='arg')A.innerHTML=vArg();
+    else if(tab==='more')A.innerHTML=vMore();
+    else if(tab==='biz')A.innerHTML=vBiz();
+    else if(tab==='cli')A.innerHTML=vCli();
+    else if(tab==='rap')A.innerHTML=vRap();
+    else{tab='home';A.innerHTML=vHome();}
+    $('nav').innerHTML=navH();
+  }catch(err){
+    var A=$('app');
+    if(A) A.innerHTML='<div class="card al r"><h2>Erreur</h2><p class="mut">'+esc(err.message)+'<br><button class="b" onclick="localStorage.clear();location.reload()">Réinitialiser</button></p></div>';
   }
 }
-
-function saveData(){
-  try {
-    localStorage.setItem(KEY, JSON.stringify(S));
-  } catch(e) {}
-}
-
-function go(t){
-  tab = t;
-  render();
-  window.scrollTo(0,0);
-}
-
-function render(){
-  try {
-    var app = document.getElementById('app');
-    document.getElementById('ttl').textContent = S.biz ? S.biz.nom : 'ESPOIR Finance';
-    
-    var navBtns = document.querySelectorAll('nav button');
-    var tabsList = ['home', 'sell', 'stock', 'arg', 'more'];
-    navBtns.forEach(function(btn, idx){
-      if(tabsList[idx] === tab) btn.classList.add('on');
-      else btn.classList.remove('on');
-    });
-
-    if(tab === 'home') {
-      app.innerHTML = '<div class="card">' +
-        '<h2>Tableau de bord (GitHub Synchro)</h2>' +
-        '<div class="big">Actif</div>' +
-        '<p class="mut">Le cache de GitHub a été contourné avec succès. Vos données locales et en ligne sont intactes.</p>' +
-        '<button class="b" onclick="go(\'sell\')">🛒 Démarrer une vente</button>' +
-        '</div>';
-    } else if(tab === 'sell') {
-      app.innerHTML = '<div class="card">' +
-        '<h2>Module Vente</h2>' +
-        '<label>Produits disponibles</label>' +
-        '<select>' + S.p.map(function(p){ return '<option>' + p.nom + ' (' + p.vente + ' ' + S.dev + ')</option>'; }).join('') + '</select>' +
-        '<button class="b" onclick="alert(\'Vente enregistrée !\')">Valider la vente</button>' +
-        '</div>';
-    } else if(tab === 'stock') {
-      app.innerHTML = '<div class="card">' +
-        '<h2>Stock (' + S.p.length + ')</h2>' +
-        S.p.map(function(p){ return '<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><b>' + p.nom + '</b><br><span class="mut">Qté : ' + p.qte + ' | ' + p.vente + ' ' + S.dev + '</span></div>'; }).join('') +
-        '<button class="b" onclick="var nom=prompt(\'Nom :\');var prix=prompt(\'Prix :\');if(nom){S.p.push({id:Date.now(),nom:nom,vente:Number(prix)||100,qte:1});saveData();render();}">+ Ajouter</button>' +
-        '</div>';
-    } else if(tab === 'arg') {
-      app.innerHTML = '<div class="card"><h2>Caisse</h2><p class="mut">Comptes actifs : ' + S.acc.length + '</p></div>';
-    } else if(tab === 'more') {
-      app.innerHTML = '<div class="card"><h2>Paramètres</h2><label>Établissement</label><input id="m_nom" value="' + (S.biz.nom || '') + '"><button class="b" onclick="S.biz.nom=document.getElementById(\'m_nom\').value;saveData();render();alert(\'Enregistré\');">Enregistrer</button></div>';
-    }
-  } catch(err) {
-    document.getElementById('app').innerHTML = '<div class="card" style="border-left:5px solid var(--red)"><h2>Erreur</h2><p class="mut">' + err.message + '</p></div>';
-  }
-}
-
-window.addEventListener('DOMContentLoaded', function(){
-  loadData();
-  render();
-});
+start();
 </script>
 </body>
 </html>
