@@ -4,9 +4,6 @@
 <div id="md"></div>
 <nav id="nav"></nav>
 <script>
-// FORCE CLEAR SERVICE WORKER CACHE - FIX 20H00
-if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){for(var i=0;i<regs.length;i++){regs[i].unregister();}}); if(window.caches){caches.keys().then(function(keys){keys.forEach(function(k){caches.delete(k);});});}}
-
 var DEMO=false,REAL=null,REALCU=null,DP=null,CU=null,LK={n:0,t:0},idle,MD=null,S,tab='home',cart=[],D=864e5,KEY='espoir_v03';
 function init(){return{taux:2265,dev:'FC',acc:[{id:'a1',nom:'Caisse',cur:'FC'},{id:'a2',nom:'Caisse',cur:'USD'},{id:'a3',nom:'Mobile Money',cur:'FC'}],p:[],v:[],mv:[],biz:null,fr:[],ac:[],sm:[],us:[],au:[],cl:[],od:[],cs:[]}}
 function norm(){S.cs=S.cs||[];S.od=S.od||[];S.us=S.us||[];S.au=S.au||[];S.cl=S.cl||[];S.fr=S.fr||[];S.ac=S.ac||[];S.sm=S.sm||[]}
@@ -1053,7 +1050,7 @@ function R(){
   roleFilter();
 }
 if(window.addEventListener)window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();DP=e});
-if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0)navigator.serviceWorker.register('sw.js').catch(function(){});
+/* sw.js removed for 20h fix - was caching old version */
 if(document.addEventListener){document.addEventListener('click',bump,true);document.addEventListener('keydown',bump,true);document.addEventListener('input',function(e){var t=e.target;if(!t||t.type!=='number')return;var v=parseFloat(t.value),n=t.nextElementSibling,big=v>=1000;if(n&&n.className==='fmh'){if(big)n.textContent=v.toLocaleString('fr-FR');else n.parentNode.removeChild(n)}else if(big){var d=document.createElement('div');d.className='fmh';d.textContent=v.toLocaleString('fr-FR');t.parentNode.insertBefore(d,t.nextSibling)}},true);document.addEventListener('visibilitychange',function(){if(document.hidden)backupNow(true)})}
 start();
 </script>
